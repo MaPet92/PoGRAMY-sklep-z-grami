@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block content %}
+
+{% if messages %}
+   {% for message in messages %}
+       <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+   {% endfor %}
+{% endif %}
+
+<div class="promo_slider">
+    <div class="sliders">
+    {% for game in random_promo_games %}
+        <div class="slider-element" onclick="location.href='{% url 'game_page' slug=game.slug %}'">
+            <img src="{{ game.image.url }}" alt="{{ game.name }}">
+            <div class="slider-text">
+                <p><span class="slider_game_name">{{ game.name }}</span></p>
+                <br><br>
+                <p><span class="slider_game_promo_price_text">CENA PROMOCYJNA:</span><br><span class="slider_game_promo_price">{{ game.promo_price|localize }} zł</span></p>
+                <p><span class="slider_game_price_text">CENA REGULARNA:</span><br><span class="slider_game_price">{{ game.price|localize }} zł</span> <span class="discount">(-{{ game.discount }}%)</span></p>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+<div class="five_games">
+    <h2>Nadchodzące gry:</h2>
+    <ul>
+        {% for game in random_coming_games|slice:":5" %}
+            <li>
+                {% if game.image %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{{ game.image.url }}" alt="{{ game.name }}"></a>
+                {% else %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200"></a>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <span class="promotion" style="font-size: 20px">PROMOCJA</span>
+                {% elif not game.is_published == True %}
+                    <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <div><span style="font-size: 25px">{{ game.promo_price }} zł</span></div>
+                {% else %}
+                    <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
+                {% endif %}
+                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+            </li>
+        {% empty %}
+            <li>Brak gier</li>
+        {% endfor %}
+    </ul>
+    <br>
+    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'incoming_games' %}">Zobacz więcej >>></a></div>
+</div>
+
+<div class="five_games">
+    <h2>Gry komputerowe:</h2>
+    <ul>
+        {% for game in random_pc_games|slice:":5" %}
+            <li>
+                {% if game.image %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{{ game.image.url }}" alt="{{ game.name }}"></a>
+                {% else %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200"></a>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <span class="promotion" style="font-size: 20px">PROMOCJA</span>
+                {% elif not game.is_published == True %}
+                    <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <div><span style="font-size: 25px">{{ game.promo_price }} zł</span></div>
+                {% else %}
+                    <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
+                {% endif %}
+                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+            </li>
+        {% empty %}
+            <li>Brak gier</li>
+        {% endfor %}
+    </ul>
+    <br>
+    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug='pc' %}">Zobacz więcej >>></a></div>
+</div>
+
+<div class="five_games">
+    <h2>Gry na PlayStation:</h2>
+    <ul>
+        {% for game in random_playstation_games|slice:":5" %}
+            <li>
+                {% if game.image %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{{ game.image.url }}" alt="{{ game.name }}"></a>
+                {% else %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200"></a>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <span class="promotion" style="font-size: 20px">PROMOCJA</span>
+                {% elif not game.is_published == True %}
+                    <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <div><span style="font-size: 25px">{{ game.promo_price }} zł</span></div>
+                {% else %}
+                    <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
+                {% endif %}
+                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+            </li>
+        {% empty %}
+            <li>Brak gier</li>
+        {% endfor %}
+    </ul>
+    <br>
+    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug='playstation' %}">Zobacz więcej >>></a></div>
+</div>
+
+<div class="five_games">
+    <h2>Gry na Xboxa:</h2>
+    <ul>
+        {% for game in random_xbox_games|slice:":5" %}
+           <li>
+                {% if game.image %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{{ game.image.url }}" alt="{{ game.name }}"></a>
+                {% else %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200"></a>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <span class="promotion" style="font-size: 20px">PROMOCJA</span>
+                {% elif not game.is_published == True %}
+                    <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <div><span style="font-size: 25px">{{ game.promo_price }} zł</span></div>
+                {% else %}
+                    <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
+                {% endif %}
+                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+            </li>
+        {% empty %}
+            <li>Brak gier</li>
+        {% endfor %}
+    </ul>
+    <br>
+    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug='xbox' %}">Zobacz więcej >>></a></div>
+</div>
+<div class="five_games">
+    <h2>Gry na Nintendo Switch:</h2>
+    <ul>
+        {% for game in random_switch_games|slice:":5" %}
+            <li>
+                {% if game.image %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{{ game.image.url }}" alt="{{ game.name }}"></a>
+                {% else %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200"></a>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <span class="promotion" style="font-size: 20px">PROMOCJA</span>
+                {% elif not game.is_published == True %}
+                    <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <div><span style="font-size: 25px">{{ game.promo_price }} zł</span></div>
+                {% else %}
+                    <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
+                {% endif %}
+                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+            </li>
+        {% empty %}
+            <li>Brak gier</li>
+        {% endfor %}
+    </ul>
+    <br>
+    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug='nintendo-switch' %}">Zobacz więcej >>></a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,192 @@
+
+
+.game_page {
+    max-width: 60%;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    padding: 5rem 3rem;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-size: 20px;
+    line-height: 2em;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    gap: 40px;
+}
+
+.game_page img {
+    max-width: 35%;
+    height: auto;
+    align-self: center;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    object-fit: contain;
+    display: block;
+}
+
+.game_info {
+    flex: 1;
+    margin-left: 50px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.add_to_basket {
+    padding: 12px 24px;
+    font-size: 25px;
+    border-radius: 15px;
+    border: none;
+    background-color: #fee922;
+    color: #282828;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-top: 20px;
+    align-self: flex-start;
+}
+
+.add_to_basket:hover {
+    background-color: #b2a317;
+    color: #1c1c1c;
+}
+
+.five_games {
+  max-width: 60%;
+  width: 100%;
+  margin: 0 auto -50px auto;
+  padding: 2rem;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  font-size: 20px;
+  line-height: 2em;
+  color: #ffffff;
+  position: relative;
+}
+
+.five_games ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+}
+
+.five_games ul li {
+    width: 200px;
+    height: 450px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    color: #282828;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    flex: 0 0 calc(20% - 20px);
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    position: relative;
+}
+
+.five_games ul li:hover {
+    background-color: #e4e4e4;
+    transform: scale(1.05);
+}
+
+.five_games ul li img {
+    max-width: 100%;
+    height: 250px;
+    border-radius: 4px;
+    margin: 10px auto 10px auto;
+    display: block;
+    object-fit: cover;
+}
+
+.five_games ul li strong {
+    display: block;
+    line-height: 1.4em;
+}
+
+.five_games ul li span {
+    font-size: 25px;
+    margin-top: auto;
+}
+
+.five_games_basket {
+    padding: 12px 24px;
+    font-size: 100%;
+    border-radius: 10px;
+    border: none;
+    background-color: #fee922;
+    color: #282828;
+    cursor: pointer;
+    margin-bottom: 10px;
+    margin-top: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.five_games_basket:hover {
+    background-color: #b2a317;
+    color: #1c1c1c;
+}
+
+.head_game_page {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sort {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.sort option {
+    color: #1c1c1c;
+    background-color: #fee922;
+}
+
+.sort select {
+    padding: 5px 10px;
+    border-radius: 10px;
+    color: #1c1c1c;
+    background-color: #fee922;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.promotion {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.coming {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: blue;
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Wszystkie gry – PoGRAMY{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/style2.css' %}">{% endblock %}
+
+{% block content %}
+
+<div class="five_games">
+    <div class="head_game_page">
+    <h2>{% if coming_soon %}Nadchodzące gry:{% else %}Wszystkie gry{% if slug == 'pc' %} komputerowe{% elif slug == 'playstation' %} na PlayStation{% elif slug == 'xbox' %} na Xboxa{% elif slug == 'switch' %} na Nintendo Switch{% endif %}:{% endif %}</h2>
+        <div class="sort">
+            <label for="sorted">Sortuj:</label>
+                <select id="sorted" name="sorted">
+                    <option value="name" {% if sorted == 'name' %}selected{% endif %}>Tytuł</option>
+                    <option value="price" {% if sorted == 'price' %}selected{% endif %}>Cena</option>
+                    <option value="year_of_premiere" {% if sorted == 'year_of_premiere' %}selected{% endif %}>Rok premiery</option>
+                </select>
+        </div>
+    </div>
+    <ul>
+        {% for game in games %}
+            <li>
+                {% if game.image %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{{ game.image.url }}" alt="{{ game.name }}"></a>
+                {% else %}
+                    <a href="{% url 'game_page' slug=game.slug %}"><img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200"></a>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <span class="promotion" style="font-size: 20px">PROMOCJA</span>
+                {% elif not game.is_published == True %}
+                    <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
+                {% endif %}
+                {% if game.promotion == True %}
+                    <div><span style="font-size: 25px">{{ game.promo_price }} zł</span></div>
+                {% else %}
+                    <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
+                {% endif %}
+                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+            </li>
+        {% empty %}
+            <li>Brak gier</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

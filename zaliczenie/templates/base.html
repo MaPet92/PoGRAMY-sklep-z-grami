@@ -1,0 +1,59 @@
+{% load static %}
+
+<!doctype html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}PoGRAMY – sklep z grami. Gry komputerowe, gry PlayStation, gry Xbox, gry Nintendo Switch{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <header class="header">
+        <a href="#" class="logo">
+            <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="PoGRAMY" width="250"></a>
+        </a>
+        <form action="{% url 'search' %}" method="get" class="search-form">
+            <input type="text" name="q" placeholder=" Czego Ci potrzeba?" required>
+            <button type="submit">Szukaj</button>
+        </form>
+        <nav class="menu">
+            <ul class="menu-list">
+                <li><a href="{% url 'home' %}">Strona główna</a></li>
+                <li><a href="{% url 'games' %}">Katalog</a></li>
+                <li><a href="">Kontakt</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="/account/">Moje konto</a></li>
+                {% else %}
+                <li><a href="{% url 'login' %}">Zaloguj się</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <br><br><br>
+    <footer class="footer">
+        <p>Maciej Petryszyn | Copyright &copy; 2025</p>
+    </footer>
+
+</body>
+
+<script>
+  document.getElementById('sorted').addEventListener('change', function() {
+    const sortValue = this.value;
+    const url = new URL(window.location);
+    url.searchParams.set('sorted', sortValue);
+    window.location.href = url.toString();
+  });
+</script>
+
+</html>

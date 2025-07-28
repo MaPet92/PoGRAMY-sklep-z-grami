@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Rejestracja – PoGRAMY{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/register.css' %}">{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="register_form">
+    <h2>Rejestracja:</h2>
+    <br>
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        {{ form.email.errors }}
+        {{ form.email.label_tag }}<br>{{ form.email }}<br>
+
+        {{ form.username.errors }}
+        {{ form.username.label_tag }}<br>{{ form.username }}<br>
+
+        {{ form.password.errors }}
+        {{ form.password.label_tag }}<br>{{ form.password }}<br>
+
+        {{ form.password2.errors }}
+        {{ form.password2.label_tag }}<br>{{ form.password2 }}
+
+        <br><br>
+        <p><input type="submit" class="register_button" value="Zarejestruj"></p>
+    </form>
+</div>
+
+{% endblock %}

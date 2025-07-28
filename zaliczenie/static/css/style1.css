@@ -1,0 +1,343 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  background: linear-gradient(135deg, #282828, #000000);
+  background-attachment: fixed;
+}
+
+.logo img {
+  padding: 10px;
+}
+
+.bg {
+  background: linear-gradient(135deg, #282828, #000000);
+  background-size: cover;
+  height: 100vh;
+  top: 0;
+}
+
+h1, h2 {
+  font-family: sans-serif;
+  font-size: 1.5em;
+  color: #ffffff;
+  font-weight: normal;
+  margin-top: -0.5em;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.header {
+  font-family: sans-serif;
+  font-size: 1.0em;
+  padding: 0 20px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #282828, #3c3c3c);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  border-bottom: 4px solid #fee922;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.main-container {
+    flex: 1 0 auto;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.search-form {
+  display: flex;
+  width: 900px;
+  height: 100px;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-form input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+.search-form button {
+  padding: 12px 24px;
+  font-size: 18px;
+  border-radius: 10px;
+  border: none;
+  background-color: #fee922;
+  color: #282828;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-form button:hover {
+  background-color: #b2a317;
+  color: #1c1c1c;
+}
+
+.menu {}
+.menu-list {
+  list-style: none;
+  display: flex;
+  gap: 50px;
+}
+.menu-list a {
+  padding:20px 30px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fee922;
+  display: block;
+  transition: 0.4s;
+}
+.menu-list li:last-child a {
+  border-right: 1px solid rgba(0,0,0,0.1);
+}
+.menu-list a:hover {
+  background: #fee922;
+  color: #282828;
+  border-radius: 10px;
+}
+
+.promo_slider {
+    cursor: pointer;
+    width: 50%;
+    height: 500px;
+    overflow: hidden;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background-color: #f9f9f9;
+}
+
+.sliders {
+    display: flex;
+    width: 400%;
+    height: 100%;
+    animation: slide 12s infinite;
+}
+
+.slider-element {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    padding: 20px;
+    box-sizing: border-box;
+    gap: 20px;
+}
+
+.slider-element img {
+    width: auto;
+    height: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    border-radius: 10px;
+    object-fit: contain;
+    margin-right: 20px;
+}
+
+.slider_game_name {
+    font-size: 65px;
+    font-family: sans-serif;=
+    color: #282828;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.slider_game_promo_price_text {
+  font-weight: bold;
+  font-family: sans-serif;
+}
+
+.slider_game_price_text {
+  font-weight: bold;
+  color: grey;
+  font-family: sans-serif;
+}
+
+.slider_game_promo_price {
+  font-size: 75px;
+  font-weight: bold;
+  font-family: sans-serif;
+}
+
+.slider_game_price {
+  font-size: 35px;
+  color: grey;
+  text-decoration: line-through
+}
+
+.discount {
+  margin-left: 15px;
+  color: red;
+  font-size: 25px;
+}
+
+@keyframes slide {
+    0%, 20%   { transform: translateX(0); }
+    25%, 45%  { transform: translateX(-25%); }
+    50%, 70%  { transform: translateX(-50%); }
+    75%, 95%  { transform: translateX(-75%); }
+    100%      { transform: translateX(0); }
+}
+
+.five_games {
+  max-width: 60%;
+  width: 100%;
+  margin: 75px auto 25px auto;
+  padding: 2rem;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  font-size: 20px;
+  line-height: 2em;
+  color: #ffffff;
+  position: relative;
+}
+
+.five_games ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+}
+
+.five_games ul li {
+  width: 250px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  text-align: center;
+  color: #282828;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.five_games li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+    height: 450px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+    justify-content: space-between;
+}
+.five_games li strong {
+    display: block;
+    align-content: center;
+    line-height: 1.4em;
+}
+.five_games li span {
+    display: block;
+    margin-top: auto;
+    font-size: 25px;
+}
+.five_games ul li img {
+    max-width: 100%;
+    height: 250px;
+    border-radius: 10px;
+    margin: 10px auto;
+    margin-bottom: 10px;
+    display: block;
+}
+.five_games ul li:hover {
+    background-color: #e4e4e4;
+    scale: 1.05;
+}
+.five_games_basket {
+    padding: 12px 24px;
+    font-size: 100%;
+    border-radius: 10px;
+    border: none;
+    background-color: #fee922;
+    color: #282828;
+    cursor: pointer;
+    margin-bottom: 10px;
+    margin-top: auto;
+
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+.five_games_basket:hover {
+    background-color: #b2a317;
+    color: #1c1c1c;
+}
+
+.promotion {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.coming {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: blue;
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.alert {
+    display: flex;
+    padding: 20px;
+    height: auto;
+    flex-direction: column;
+    width: 50%;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+    font-size: 20px;
+    color: #282828;
+}
+
+.footer {
+  width: 100%;
+  font-family: sans-serif;
+  text-align: right;
+  padding: 20px;
+  background: linear-gradient(135deg, #282828, #3c3c3c);
+  color: #fee922;
+  bottom: 0;
+  box-sizing: border-box;
+  border-top: 4px solid #fee922;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.3);
+}

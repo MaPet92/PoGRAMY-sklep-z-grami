@@ -1,0 +1,76 @@
+h2 {
+    font-family: sans-serif;
+    font-size: 3em;
+    color: #000000;
+    font-weight: normal;
+    margin-top: 5px;
+    padding: 12px 24px;
+}
+
+.register_form {
+    display: flex;
+    padding: 20px;
+    height: auto;
+    flex-direction: column;
+    width: 50%;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+}
+
+.register_form input[type="text"], .register_form input[type="password"], .register_form input[type="email"] {
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    background-color: #282828;
+    color: #fee922;
+    width: 500px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.register_form input::placeholder {
+  color: #ccc; /* dowolny kolor, np. jasnoszary */
+}
+
+.register_button {
+    padding: 12px 24px;
+    width: 100%;
+    font-size: 100%;
+    border-radius: 10px;
+    border: none;
+    background-color: #fee922;
+    color: #282828;
+    cursor: pointer;
+    margin-bottom: 10px;
+    margin-top: auto;
+
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+.register_button:hover {
+    background-color: #b2a317;
+    color: #1c1c1c;
+}
+
+.register_form label {
+    display: block;
+    font-family: sans-serif;
+    font-size: 20px;
+    margin-bottom: -10px;
+    color: #282828;
+}
+
+.register_form .errorlist {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 10px 15px;
+    margin: 8px 0 12px 0;
+    border-radius: 4px;
+    list-style-type: none;
+}
