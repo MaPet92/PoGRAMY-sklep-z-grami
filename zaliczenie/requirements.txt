@@ -1,4 +1,3 @@
-Flask
+Django
 gunicorn
-Flask_SQLAlchemy
 psycopg2-binary
