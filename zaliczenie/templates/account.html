@@ -1,12 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Wyloguj się</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
 
-<a href="{% url 'logout_page' %}">Wyloguj się</a>
+{% block title %}Dane konta – PoGRAMY{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/dane_konta.css' %}">{% endblock %}
 
-</body>
-</html>
+{% block content %}
+
+<div class="account_page">
+    <h2>Dane konta</h2>
+    <form method="post" id="AccountForm">
+        {% csrf_token %}
+
+        <!-- Renderowanie pól ręcznie, aby zachować styl -->
+        <p>
+            <label for="{{ form.username.id_for_label }}">Nazwa użytkownika:</label>
+            {{ form.username }}
+        </p>
+        <p>
+            <label for="{{ form.email.id_for_label }}">E-mail:</label>
+            {{ form.email }}
+        </p>
+        <p>
+            <label for="{{ form.first_name.id_for_label }}">Imię:</label>
+            {{ form.first_name }}
+        </p>
+        <p>
+            <label for="{{ form.last_name.id_for_label }}">Nazwisko:</label>
+            {{ form.last_name }}
+        </p>
+        <br><br><br>
+        <p>
+            <button id="editBtn" class="account_button" type="button">Edytuj</button>
+            <button id="saveBtn" class="account_button" type="submit" style="display:none;">Zapisz zmiany</button>
+        </p>
+    </form>
+</div>
+
+<script>
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const inputs = document.querySelectorAll('#AccountForm input');
+
+    editBtn.addEventListener('click', function() {
+        inputs.forEach(input => input.removeAttribute('readonly'));
+        editBtn.style.display = 'none';
+        saveBtn.style.display = 'inline-block';
+    });
+</script>
+
+{% endblock %}

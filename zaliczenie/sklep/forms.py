@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 
 
 class LoginForm(forms.Form):
@@ -35,3 +36,31 @@ class RegisterForm(forms.Form):
 
 class RemindPasswordForm(forms.Form):
     email = forms.EmailField(max_length=100, label="E-mail:", widget=forms.EmailInput(attrs={'placeholder': 'Wpisz e-mail'}))
+
+class EditAccountForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        email = cleaned_data.get('email')
+        if not username:
+            self.add_error('username', "Nazwa użytkownika jest wymagana.")
+        if not email:
+            self.add_error('email', "E-mail jest wymagany.")
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        super(EditAccountForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+             field.widget.attrs['readonly'] = True
+
+        self.fields['first_name'].required = False
+        self.fields['last_name'].required = False
+
+        self.fields['username'].widget.attrs['placeholder'] = ' Nic tu nie ma'
+        self.fields['email'].widget.attrs['placeholder'] = ' Nic tu nie ma'
+        self.fields['first_name'].widget.attrs['placeholder'] = ' Nic tu nie ma'
+        self.fields['last_name'].widget.attrs['placeholder'] = ' Nic tu nie ma'

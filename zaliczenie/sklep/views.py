@@ -7,8 +7,11 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
-from sklep.models import Product, Platform, Genre, Producer
-from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm
+from django.views.decorators.csrf import csrf_exempt
+from sklep.models import Product, Platform, Genre, Producer, Cart
+from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -58,6 +61,13 @@ def games_by_platform(request, platform_slug):
     games = Product.objects.filter(platform=platform)
     games = sortings(games, sorted_by)
     return render(request, 'games.html', {'sorted': sorted_by, 'platform': platform, 'slug': platform_slug, 'games': games})
+
+def games_by_producer(request, producer_slug):
+    sorted_by = request.GET.get('sorted', 'name')
+    producer = get_object_or_404(Producer, slug=producer_slug)
+    games = Product.objects.filter(producer=producer)
+    games = sortings(games, sorted_by)
+    return render(request, 'games.html', {'sorted': sorted_by, 'producer': producer, 'slug': producer_slug, 'games': games})
 
 def incoming_games(request):
     sorted_by = request.GET.get('sorted', 'name')
@@ -110,14 +120,35 @@ def register(request, *args, **kwargs):
     return render(request, 'register.html', {'form': form})
 
 def search(request):
-    query = request.GET.get('q').strip()
-    games = Product.objects.filter(name__icontains=query)
+    query = request.GET.get('q', '').strip()
+    if query:
+        games = Product.objects.filter(name__icontains=query)
+    else:
+        games = Product.objects.all()
     return render(request, 'search_games.html', {'games': games})
 
+def account(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Musisz być zalogowany")
+        return redirect('login')
+
+    if request.method == 'POST':
+        form = EditAccountForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Zaktualizowano dane.")
+            return redirect('account')
+    else:
+        form = EditAccountForm(instance=request.user)
+
+    return render(request, 'account.html', {'form': form})
+
 def sortings(queryset, sorted_by):
-    if sorted_by == 'name':
+    if sorted_by == 'name_up':
         return queryset.order_by('name')
-    elif sorted_by == 'price':
+    if sorted_by == 'name_down':
+        return queryset.order_by('-name')
+    elif sorted_by == 'price_up':
         annotated_qs = queryset.annotate(
             price_to_sort=Case(
                 When(promotion=True, then=F('promo_price')),
@@ -126,7 +157,86 @@ def sortings(queryset, sorted_by):
             )
         ).order_by('price_to_sort')
         return annotated_qs
-    elif sorted_by == 'year_of_premiere':
+    elif sorted_by == 'price_down':
+        annotated_qs = queryset.annotate(
+            price_to_sort=Case(
+                When(promotion=True, then=F('promo_price')),
+                default=F('price'),
+                output_field=DecimalField()
+            )
+        ).order_by('-price_to_sort')
+        return annotated_qs
+    elif sorted_by == 'year_of_premiere_up':
         return queryset.order_by('year_of_premiere')
+    elif sorted_by == 'year_of_premiere_down':
+        return queryset.order_by('-year_of_premiere')
     else:
         return queryset.order_by('name')
+
+@csrf_exempt
+def add_to_cart_ajax(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Nieprawidłowa metoda'})
+
+    try:
+        product_id = int(request.POST.get('product_id'))
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        return JsonResponse({'success': False, 'error': "Nieprawidłowe dane"})
+
+    product = Product.objects.filter(id=product_id).first()
+    if not product:
+        return JsonResponse({'success': False, 'error': "Produkt nie istnieje"})
+
+    cart = Cart.objects.filter(customer=request.user.customer, status='new').first()
+    if not cart:
+        cart = Cart.objects.create(customer=request.user.customer, total_price=0)
+
+    try:
+        cart.add_to_cart(product, quantity)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': True, 'message': 'Produkt dodany do koszyka'})
+
+@csrf_exempt
+def remove_from_cart_ajax(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Nieprawidłowa metoda'})
+
+    try:
+        product_id = int(request.POST.get('product_id'))
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        return JsonResponse({'success': False, 'error': "Nieprawidłowe dane"})
+
+    product = Product.objects.filter(id=product_id).first()
+    if not product:
+        return JsonResponse({'success': False, 'error': "Produkt nie istnieje"})
+
+    cart = Cart.objects.filter(customer=request.user.customer, status='new').first()
+    if not cart:
+        return JsonResponse({'success': False, 'error': "Brak koszyka"})
+
+    try:
+        cart.remove_from_cart(product, quantity)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': True, 'message': f'{quantity} szt. usunięte z koszyka'})
+
+@csrf_exempt
+def cart_count_ajax(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'count': 0, 'error': 'Nie jesteś zalogowany'})
+
+    try:
+        cart = request.user.customer.cart_set.filter(status='new').first()
+    except ObjectDoesNotExist:
+        return JsonResponse({'success': False, 'count': 0, 'error': 'Brak powiązanego klienta'})
+
+    if not cart:
+        return JsonResponse({'success': True, 'count': 0})
+
+    total_quantity = cart.cartitem_set.aggregate(total=models.Sum('quantity'))['total'] or 0
+    return JsonResponse({'success': True, 'count': total_quantity})

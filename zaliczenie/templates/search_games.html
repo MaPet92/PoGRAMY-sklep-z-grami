@@ -12,9 +12,12 @@
         <div class="sort">
             <label for="sorted">Sortuj:</label>
                 <select id="sorted" name="sorted">
-                    <option value="name" {% if sorted == 'name' %}selected{% endif %}>Tytuł</option>
-                    <option value="price" {% if sorted == 'price' %}selected{% endif %}>Cena</option>
-                    <option value="year_of_premiere" {% if sorted == 'year_of_premiere' %}selected{% endif %}>Rok premiery</option>
+                    <option value="name_up" {% if sorted == 'name_up' %}selected{% endif %}>Tytuł: od A do Z</option>
+                    <option value="name_down" {% if sorted == 'name_down' %}selected{% endif %}>Tytuł: od Z do A</option>
+                    <option value="price_up" {% if sorted == 'price_up' %}selected{% endif %}>Cena: rosnąco</option>
+                    <option value="price_down" {% if sorted == 'price_down' %}selected{% endif %}>Cena: malejąco</option>
+                    <option value="year_of_premiere_up" {% if sorted == 'year_of_premiere_up' %}selected{% endif %}>Rok premiery: rosnąco</option>
+                    <option value="year_of_premiere_down" {% if sorted == 'year_of_premiere_down' %}selected{% endif %}>Rok premiery: malejąco</option>
                 </select>
         </div>
     </div>

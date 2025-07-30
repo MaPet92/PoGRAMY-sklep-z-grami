@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% block title %}PoGRAMY – sklep z grami. Gry komputerowe, gry PlayStation, gry Xbox, gry Nintendo Switch{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/style1.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
@@ -18,16 +19,30 @@
             <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="PoGRAMY" width="250"></a>
         </a>
         <form action="{% url 'search' %}" method="get" class="search-form">
-            <input type="text" name="q" placeholder=" Czego Ci potrzeba?" required>
+            <input type="text" name="q" placeholder=" Czego Ci potrzeba?">
             <button type="submit">Szukaj</button>
         </form>
         <nav class="menu">
             <ul class="menu-list">
                 <li><a href="{% url 'home' %}">Strona główna</a></li>
-                <li><a href="{% url 'games' %}">Katalog</a></li>
+                <li class="drop_menu"><a href="{% url 'games' %}">Katalog</a>
+                    <ul class="drop_menu-list">
+                        <li><a href="{% url 'games_by_platform' platform_slug='pc' %}">PC</a></li>
+                        <li><a href="{% url 'games_by_platform' platform_slug='playstation' %}">PlayStation</a></li>
+                        <li><a href="{% url 'games_by_platform' platform_slug='xbox' %}">Xbox</a></li>
+                        <li><a href="{% url 'games_by_platform' platform_slug='nintendo-switch' %}">Switch</a></li>
+                    </ul>
+                </li>
                 <li><a href="">Kontakt</a></li>
+                <li><span id="cart-count">0</span></li>
                 {% if user.is_authenticated %}
-                <li><a href="/account/">Moje konto</a></li>
+                <li class="drop_menu"><a class="drop_menu_head">{{ user.username }}</a>
+                    <ul class="drop_menu-list">
+                        <li><a href="{% url 'account' %}">Profil</a></li>
+                        <li><a href="{% url 'account' %}">Zamówienia</a></li>
+                        <li><a href="{% url 'logout_page' %}">Wyloguj</a></li>
+                    </ul>
+                </li>
                 {% else %}
                 <li><a href="{% url 'login' %}">Zaloguj się</a></li>
                 {% endif %}
@@ -45,15 +60,8 @@
         <p>Maciej Petryszyn | Copyright &copy; 2025</p>
     </footer>
 
+    <script src="{% static 'js/add_remove_cart.js' %}"></script>
+    <script src="{% static 'js/sorted.js' %}"></script>
+
 </body>
-
-<script>
-  document.getElementById('sorted').addEventListener('change', function() {
-    const sortValue = this.value;
-    const url = new URL(window.location);
-    url.searchParams.set('sorted', sortValue);
-    window.location.href = url.toString();
-  });
-</script>
-
 </html>

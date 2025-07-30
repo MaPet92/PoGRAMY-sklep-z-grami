@@ -1,7 +1,11 @@
+from decimal import Decimal
 from token import MINUS
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 # Create your models here.
 
@@ -46,6 +50,7 @@ class Product(models.Model):
         return self.name
 
 class Customer(models.Model):
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE, related_name='customer', null=True, blank=True)
     name = models.CharField(max_length=64)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
@@ -56,20 +61,61 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
+class CartItem(models.Model):
+    cart = models.ForeignKey('Cart', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    quantity = models.IntegerField(validators=[MinValueValidator(1)])
+    date_added = models.DateTimeField(auto_now_add=True)
+
 class Cart(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product)
-    total_price = models.DecimalField(max_digits=6, decimal_places=2, validators=[MinValueValidator(0)])
+    STATUS_OPTIONS = [
+        ('new', 'Nowe'),
+        ('processing', 'W trakcie'),
+        ('completed', 'Zakończone'),
+        ('cancelled', 'Anulowane'),
+    ]
 
-    def __str__(self):
-        return f'{self.customer.name} cart'
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    date_added = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_OPTIONS, default='new')
 
-class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product)
-    total_price = models.DecimalField(max_digits=6, decimal_places=2, validators=[MinValueValidator(0)])
-    status = models.CharField(max_length=64)
-    date = models.DateTimeField(auto_now_add=True)
+    def add_to_cart(self, product, quantity=1):
+        if product.stock < quantity:
+            raise ValueError('Brak wystarczającej liczby produktów w magazynie')
 
-    def __str__(self):
-        return f'{self.customer.name} order'
+        product.stock -= quantity
+        product.save()
+
+        item, created = CartItem.objects.get_or_create(cart=self, product=product)
+        if not created:
+            item.quantity += quantity
+        else:
+            item.quantity = quantity
+        item.save()
+        self.update_total_price()
+
+    def remove_from_cart(self, product, quantity=1):
+        try:
+            item = CartItem.objects.get(cart=self, product=product)
+        except CartItem.DoesNotExist:
+            return
+
+        if quantity >= item.quantity:
+            product.stock += item.quantity
+            item.delete()
+        else:
+            item.quantity -= quantity
+            product.stock += quantity
+            item.save()
+
+        product.save()
+        self.update_total_price()
+
+    def update_total_price(self):
+        total = 0
+        for item in self.cartitem_set.select_related('product'):
+            price = item.product.promo_price if item.product.promotion else item.product.price
+            total += price * item.quantity
+        self.total_price = total
+        self.save()
