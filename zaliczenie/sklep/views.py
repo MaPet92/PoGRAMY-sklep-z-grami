@@ -1,17 +1,15 @@
 import random
-from idlelib import query
-
-from django.contrib.auth import authenticate
 from django.db.models import Case, When, F, DecimalField
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
 from django.views.decorators.csrf import csrf_exempt
-from sklep.models import Product, Platform, Genre, Producer, Cart
+from sklep.models import Product, Platform, Genre, Producer, Cart, CartItem
 from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.templatetags.static import static
 
 # Create your views here.
 
@@ -172,71 +170,3 @@ def sortings(queryset, sorted_by):
         return queryset.order_by('-year_of_premiere')
     else:
         return queryset.order_by('name')
-
-@csrf_exempt
-def add_to_cart_ajax(request):
-    if request.method != 'POST':
-        return JsonResponse({'success': False, 'error': 'Nieprawidłowa metoda'})
-
-    try:
-        product_id = int(request.POST.get('product_id'))
-        quantity = int(request.POST.get('quantity', 1))
-    except (TypeError, ValueError):
-        return JsonResponse({'success': False, 'error': "Nieprawidłowe dane"})
-
-    product = Product.objects.filter(id=product_id).first()
-    if not product:
-        return JsonResponse({'success': False, 'error': "Produkt nie istnieje"})
-
-    cart = Cart.objects.filter(customer=request.user.customer, status='new').first()
-    if not cart:
-        cart = Cart.objects.create(customer=request.user.customer, total_price=0)
-
-    try:
-        cart.add_to_cart(product, quantity)
-    except ValueError as e:
-        return JsonResponse({'success': False, 'error': str(e)})
-
-    return JsonResponse({'success': True, 'message': 'Produkt dodany do koszyka'})
-
-@csrf_exempt
-def remove_from_cart_ajax(request):
-    if request.method != 'POST':
-        return JsonResponse({'success': False, 'error': 'Nieprawidłowa metoda'})
-
-    try:
-        product_id = int(request.POST.get('product_id'))
-        quantity = int(request.POST.get('quantity', 1))
-    except (TypeError, ValueError):
-        return JsonResponse({'success': False, 'error': "Nieprawidłowe dane"})
-
-    product = Product.objects.filter(id=product_id).first()
-    if not product:
-        return JsonResponse({'success': False, 'error': "Produkt nie istnieje"})
-
-    cart = Cart.objects.filter(customer=request.user.customer, status='new').first()
-    if not cart:
-        return JsonResponse({'success': False, 'error': "Brak koszyka"})
-
-    try:
-        cart.remove_from_cart(product, quantity)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
-
-    return JsonResponse({'success': True, 'message': f'{quantity} szt. usunięte z koszyka'})
-
-@csrf_exempt
-def cart_count_ajax(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'success': False, 'count': 0, 'error': 'Nie jesteś zalogowany'})
-
-    try:
-        cart = request.user.customer.cart_set.filter(status='new').first()
-    except ObjectDoesNotExist:
-        return JsonResponse({'success': False, 'count': 0, 'error': 'Brak powiązanego klienta'})
-
-    if not cart:
-        return JsonResponse({'success': True, 'count': 0})
-
-    total_quantity = cart.cartitem_set.aggregate(total=models.Sum('quantity'))['total'] or 0
-    return JsonResponse({'success': True, 'count': total_quantity})

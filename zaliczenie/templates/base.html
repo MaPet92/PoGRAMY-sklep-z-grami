@@ -5,8 +5,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PoGRAMY – sklep z grami. Gry komputerowe, gry PlayStation, gry Xbox, gry Nintendo Switch{% endblock %}</title>
     <link rel="icon" href="{% static 'images/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/style1.css' %}">
@@ -15,8 +15,8 @@
 
 <body>
     <header class="header">
-        <a href="#" class="logo">
-            <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="PoGRAMY" width="250"></a>
+        <a href="{% url 'home' %}" class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="PoGRAMY" width="250">
         </a>
         <form action="{% url 'search' %}" method="get" class="search-form">
             <input type="text" name="q" placeholder=" Czego Ci potrzeba?">
@@ -24,8 +24,8 @@
         </form>
         <nav class="menu">
             <ul class="menu-list">
-                <li><a href="{% url 'home' %}">Strona główna</a></li>
-                <li class="drop_menu"><a href="{% url 'games' %}">Katalog</a>
+                <li><a class="menu_button" href="{% url 'home' %}">Strona główna</a></li>
+                <li class="drop_menu"><a class="menu_button" href="{% url 'games' %}">Katalog</a>
                     <ul class="drop_menu-list">
                         <li><a href="{% url 'games_by_platform' platform_slug='pc' %}">PC</a></li>
                         <li><a href="{% url 'games_by_platform' platform_slug='playstation' %}">PlayStation</a></li>
@@ -33,10 +33,10 @@
                         <li><a href="{% url 'games_by_platform' platform_slug='nintendo-switch' %}">Switch</a></li>
                     </ul>
                 </li>
-                <li><a href="">Kontakt</a></li>
-                <li><span id="cart-count">0</span></li>
+                <li><a class="menu_button" href="">Kontakt</a></li>
+                <li><a href="#" class="cart" id="cart_icon"><img src="{% static 'images/cart_icon.png' %}" alt="cart"><span class="cart_count" id="cart-count">0</span></a></li>
                 {% if user.is_authenticated %}
-                <li class="drop_menu"><a class="drop_menu_head">{{ user.username }}</a>
+                <li class="drop_menu"><a class="menu_button" class="drop_menu_head">{{ user.username }}</a>
                     <ul class="drop_menu-list">
                         <li><a href="{% url 'account' %}">Profil</a></li>
                         <li><a href="{% url 'account' %}">Zamówienia</a></li>
@@ -44,7 +44,7 @@
                     </ul>
                 </li>
                 {% else %}
-                <li><a href="{% url 'login' %}">Zaloguj się</a></li>
+                <li><a class="menu_button" href="{% url 'login' %}">Zaloguj się</a></li>
                 {% endif %}
             </ul>
         </nav>

@@ -43,7 +43,7 @@
                 <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
                 <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 <hr>
-                <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+                <div><button class="add-to-cart-btn five_games_basket" data-product-id="{{ game.id }}" data-quantity="1" type="button">Dodaj do koszyka</button></div>
             </li>
         {% empty %}
             <li>Brak gier</li>

@@ -46,15 +46,21 @@
                 {% else %}
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
-                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+                <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                <div>
+                    <button class="add-to-cart-btn five_games_basket" data-product-id="{{ game.id }}" data-quantity="1" type="button">
+                        Dodaj do koszyka
+                    </button>
+                </div>
             </li>
         {% empty %}
             <li>Brak gier</li>
         {% endfor %}
     </ul>
     <br>
-    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'incoming_games' %}">Zobacz więcej >>></a></div>
+    <div style="text-align: right; margin-bottom: -25px;">
+        <a href="{% url 'incoming_games' %}">Zobacz więcej >>></a>
+    </div>
 </div>
 
 <div class="five_games">
@@ -77,15 +83,21 @@
                 {% else %}
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
-                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+                <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                <div>
+                    <button class="add-to-cart-btn five_games_basket" data-product-id="{{ game.id }}" data-quantity="1" type="button">
+                        Dodaj do koszyka
+                    </button>
+                </div>
             </li>
         {% empty %}
             <li>Brak gier</li>
         {% endfor %}
     </ul>
     <br>
-    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug='pc' %}">Zobacz więcej >>></a></div>
+    <div style="text-align: right; margin-bottom: -25px;">
+        <a href="{% url 'games_by_platform' platform_slug='pc' %}">Zobacz więcej >>></a>
+    </div>
 </div>
 
 <div class="five_games">
@@ -108,15 +120,21 @@
                 {% else %}
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
-                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+                <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                <div>
+                    <button class="add-to-cart-btn five_games_basket" data-product-id="{{ game.id }}" data-quantity="1" type="button">
+                        Dodaj do koszyka
+                    </button>
+                </div>
             </li>
         {% empty %}
             <li>Brak gier</li>
         {% endfor %}
     </ul>
     <br>
-    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug='playstation' %}">Zobacz więcej >>></a></div>
+    <div style="text-align: right; margin-bottom: -25px;">
+        <a href="{% url 'games_by_platform' platform_slug='playstation' %}">Zobacz więcej >>></a>
+    </div>
 </div>
 
 <div class="five_games">
@@ -139,16 +157,23 @@
                 {% else %}
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
-                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+                <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                <div>
+                    <button class="add-to-cart-btn five_games_basket" data-product-id="{{ game.id }}" data-quantity="1" type="button">
+                        Dodaj do koszyka
+                    </button>
+                </div>
             </li>
         {% empty %}
             <li>Brak gier</li>
         {% endfor %}
     </ul>
     <br>
-    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug='xbox' %}">Zobacz więcej >>></a></div>
+    <div style="text-align: right; margin-bottom: -25px;">
+        <a href="{% url 'games_by_platform' platform_slug='xbox' %}">Zobacz więcej >>></a>
+    </div>
 </div>
+
 <div class="five_games">
     <h2>Gry na Nintendo Switch:</h2>
     <ul>
@@ -169,14 +194,21 @@
                 {% else %}
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
-                    <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                    <div><button class="five_games_basket" type="submit">Dodaj do koszyka</button></div>
+                <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+                <div>
+                    <button class="add-to-cart-btn five_games_basket" data-product-id="{{ game.id }}" data-quantity="1" type="button">
+                        Dodaj do koszyka
+                    </button>
+                </div>
             </li>
         {% empty %}
             <li>Brak gier</li>
         {% endfor %}
     </ul>
     <br>
-    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug='nintendo-switch' %}">Zobacz więcej >>></a></div>
+    <div style="text-align: right; margin-bottom: -25px;">
+        <a href="{% url 'games_by_platform' platform_slug='nintendo-switch' %}">Zobacz więcej >>></a>
+    </div>
 </div>
+
 {% endblock %}
