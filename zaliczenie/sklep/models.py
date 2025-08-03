@@ -42,7 +42,6 @@ class Product(models.Model):
     year_of_premiere = models.IntegerField()
     is_published = models.BooleanField(default=True)
     stock = models.IntegerField(validators=[MinValueValidator(0)])
-    rating = models.DecimalField(null=True, blank=True, max_digits=3, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(5)])
     promotion = models.BooleanField(default=False)
     promo_price = models.DecimalField(null=True, blank=True, max_digits=6, decimal_places=2, validators=[MinValueValidator(0)])
 

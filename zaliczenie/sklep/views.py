@@ -4,12 +4,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
-from django.views.decorators.csrf import csrf_exempt
 from sklep.models import Product, Platform, Genre, Producer, Cart, CartItem
 from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
-from django.templatetags.static import static
 
 # Create your views here.
 
