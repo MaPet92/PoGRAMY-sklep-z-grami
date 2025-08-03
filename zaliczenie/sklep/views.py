@@ -26,13 +26,6 @@ def home_page(request):
     random_switch_games = random.sample(switch_games, min(len(switch_games), 5))
     return render(request, 'home.html', {'random_promo_games': random_promo_games, 'random_coming_games': random_coming_games, 'random_pc_games': random_pc_games, 'random_playstation_games': random_playstation_games, 'random_xbox_games': random_xbox_games, 'random_switch_games': random_switch_games})
 
-def search(request):
-    query = request.GET.get('q')
-    return render(request, 'search.html', {'query': query})
-
-def account(request):
-    return render(request, 'account.html')
-
 def logout_page(request):
     logout(request)
     return redirect('home')
