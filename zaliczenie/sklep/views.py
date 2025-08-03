@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
-from sklep.models import Product, Platform, Genre, Producer, Cart, CartItem
+from sklep.models import Product, Platform, Genre, Producer
 from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm
 
 # Create your views here.
