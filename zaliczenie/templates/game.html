@@ -22,7 +22,7 @@
         <p><strong>Rok premiery:</strong> {{ game.year_of_premiere|stringformat:"d" }}</p>
         <p><strong>Gatunek:</strong>
             {% for genre in game.genres.all %}
-                {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                <a href="{% url 'games_by_genre' genre_slug=genre.slug %}">{{ genre.name }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p><br><br>
         <p><span style="font-size: 75px">{{ game.price|localize }} zł</span></p>

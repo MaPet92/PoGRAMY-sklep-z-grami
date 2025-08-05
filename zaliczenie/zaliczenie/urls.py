@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from sklep.views import home_page, search, game_page, games, login, register, games_by_platform, incoming_games, account, logout_page, remind_password, games_by_producer
+from sklep.views import home_page, search, game_page, games, login, register, games_by_platform, incoming_games, account, logout_page, remind_password, games_by_producer, games_by_genre, add_product
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -32,8 +32,10 @@ urlpatterns = [
     path('games/coming_soon/', incoming_games, name='incoming_games'),
     path('games/<slug:platform_slug>/', games_by_platform, name='games_by_platform'),
     path('games/producer/<slug:producer_slug>/', games_by_producer, name='games_by_producer'),
+    path('games/genre/<slug:genre_slug>/', games_by_genre, name='games_by_genre'),
     path('login/', login, name='login'),
     path('register/', register, name='register'),
+    path('add_product/', add_product, name='add_product')
 ]
 
 if settings.DEBUG:

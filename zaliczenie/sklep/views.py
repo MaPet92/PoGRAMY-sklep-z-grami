@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
 from sklep.models import Product, Platform, Genre, Producer
-from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm
+from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm, AddProductForm
 
 # Create your views here.
 
@@ -55,6 +55,13 @@ def games_by_producer(request, producer_slug):
     games = Product.objects.filter(producer=producer)
     games = sortings(games, sorted_by)
     return render(request, 'games.html', {'sorted': sorted_by, 'producer': producer, 'slug': producer_slug, 'games': games})
+
+def games_by_genre(request, genre_slug):
+    sorted_by = request.GET.get('sorted', 'name')
+    genre = get_object_or_404(Genre, slug=genre_slug)
+    games = Product.objects.filter(genres=genre)
+    games = sortings(games, sorted_by)
+    return render(request, 'games.html', {'sorted': sorted_by, 'genre': genre, 'slug': genre_slug, 'games': games})
 
 def incoming_games(request):
     sorted_by = request.GET.get('sorted', 'name')
@@ -159,3 +166,20 @@ def sortings(queryset, sorted_by):
         return queryset.order_by('-year_of_premiere')
     else:
         return queryset.order_by('name')
+
+def add_product(request, *args, **kwargs):
+    if not request.user.is_superuser:
+        messages.error(request, "Nie masz uprawnień.")
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = AddProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Zapisano poprawnie")
+            return redirect('add_product')
+
+    else:
+        form = AddProductForm()
+
+    return render(request, 'add_product.html', {'form': form})

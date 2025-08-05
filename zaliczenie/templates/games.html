@@ -8,7 +8,7 @@
 
 <div class="five_games">
     <div class="head_game_page">
-    <h2>{% if coming_soon %}Nadchodzące gry:{% elif producer %}Wszystkie gry firmy {{ producer.name }}:{% else %}Wszystkie gry{% if slug == 'pc' %} komputerowe{% elif slug == 'playstation' %} na PlayStation{% elif slug == 'xbox' %} na Xboxa{% elif slug == 'switch' %} na Nintendo Switch{% endif %}:{% endif %}</h2>
+    <h2>{% if coming_soon %}Nadchodzące gry:{% elif genre %}Wszystkie gry z gatunku {{genre.name}}:{% elif producer %}Wszystkie gry firmy {{ producer.name }}:{% else %}Wszystkie gry{% if slug == 'pc' %} komputerowe{% elif slug == 'playstation' %} na PlayStation{% elif slug == 'xbox' %} na Xboxa{% elif slug == 'nintendo-switch' %} na Nintendo Switch{% endif %}:{% endif %}</h2>
         <div class="sort">
             <label for="sorted">Sortuj:</label>
                 <select id="sorted" name="sorted">

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Panel administracyjny – PoGRAMY{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/add_product.css' %}">{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="add_product_form">
+    <h2>Dodaj nowy produkt:</h2>
+    <br>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+            {{ field.errors }}
+            {{ field.label_tag }}<br>
+            {{ field }}<br>
+
+            {% if field.name == "image" %}
+                <div class="image_preview">
+                    <img id="image_preview" src="#" alt="Podgląd obrazu"/>
+                </div>
+            {% endif %}
+
+        {% endfor %}
+
+        <br><br>
+        <p><input type="submit" class="add_product_button" value="Dodaj produkt"></p>
+    </form>
+</div>
+
+<script src="{% static 'js/image_preview.js' %}"></script>
+
+{% endblock %}
