@@ -12,79 +12,90 @@
   {% endfor %}
 {% endif %}
 
-<div class="table">
-  <table>
-    <thead>
-      <tr>
-        <th>Edytuj</th>
-        <th>Usuń</th>
-        <th>Id</th>
-        <th>Nazwa</th>
-        <th>Okładka</th>
-        <th>Cena</th>
-        <th>Opis</th>
-        <th>Rok premiery</th>
-        <th>Czy opublikowana?</th>
-        <th>Stan</th>
-        <th>Platforma</th>
-        <th>Slug</th>
-        <th>Wydawca</th>
-        <th>Czy promocja?</th>
-        <th>Cena promocyjna</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for product in products %}
-      <tr>
-        <td><a href="{% url 'edit_product' product_id=product.id %}"><button type="button">✎</button></a></td>
-        <td><form action="{% url 'delete_product' product_id=product.id %}" method="post" style="display:inline;">{% csrf_token %}<button type="submit" onclick="return confirm('Na pewno chcesz usunąć produkt {{ product.name }} z bazy danych?')">✘</button></form></td>
-        <td>{{ product.id }}</td>
-        <td><strong>{{ product.name }}</strong></td>
-        <td>
-            {% if product.image %}
-            ✔
-            {% else %}
-            ✘
-            {% endif %}
-        </td>
-        <td>{{ product.price }} zł</td>
-        <td>
-            {% if product.description %}
-            ✔
-            {% else %}
-            ✘
-            {% endif %}
-        </td>
-        <td>{{ product.year_of_premiere|stringformat:"d" }}</td>
-        <td>
-            {% if product.is_published %}
-            ✔
-            {% else %}
-            ✘
-            {% endif %}
-        </td>
-        <td>{{ product.stock }} szt.</td>
-        <td>{{ product.platform.name }}</td>
-        <td>{{ product.slug }}</td>
-        <td>{{ product.producer.name }}</td>
-        <td>
-            {% if product.promotion %}
-            ✔
-            {% else %}
-            ✘
-            {% endif %}
-        </td>
-        <td>
-            {% if product.promotion %}
-            {{ product.promo_price}} zł
-            {% else %}
-            –
-            {% endif %}
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+<div class="content-wrapper">
+  <div class="header-container">
+    <h1>Lista gier w bazie danych:</h1>
+    <form action="{% url 'add_product' %}">
+      <button class="add_product_button">Dodaj nowy produkt</button>
+    </form>
+  </div>
+
+    <br>
+
+  <div class="table">
+    <table>
+      <thead>
+        <tr>
+          <th>Edytuj</th>
+          <th>Usuń</th>
+          <th>Id</th>
+          <th>Nazwa</th>
+          <th>Okładka</th>
+          <th>Cena</th>
+          <th>Opis</th>
+          <th>Rok premiery</th>
+          <th>Czy opublikowana?</th>
+          <th>Stan</th>
+          <th>Platforma</th>
+          <th>Slug</th>
+          <th>Wydawca</th>
+          <th>Czy promocja?</th>
+          <th>Cena promocyjna</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for product in products %}
+        <tr>
+          <td><form action="{% url 'edit_product' product_id=product.id %}"><button class="edit_delete_btn" type="submit">✎</button></form></td>
+          <td><form action="{% url 'delete_product' product_id=product.id %}" method="post" style="display:inline;">{% csrf_token %}<button class="edit_delete_btn" type="submit" onclick="return confirm('Na pewno chcesz usunąć produkt {{ product.name }} z bazy danych?')">✘</button></form></td>
+          <td>{{ product.id }}</td>
+          <td><strong>{{ product.name }}</strong></td>
+          <td>
+              {% if product.image %}
+              ✔
+              {% else %}
+              ✘
+              {% endif %}
+          </td>
+          <td>{{ product.price }} zł</td>
+          <td>
+              {% if product.description %}
+              ✔
+              {% else %}
+              ✘
+              {% endif %}
+          </td>
+          <td>{{ product.year_of_premiere|stringformat:"d" }}</td>
+          <td>
+              {% if product.is_published %}
+              ✔
+              {% else %}
+              ✘
+              {% endif %}
+          </td>
+          <td>{{ product.stock }} szt.</td>
+          <td>{{ product.platform.name }}</td>
+          <td>{{ product.slug }}</td>
+          <td>{{ product.producer.name }}</td>
+          <td>
+              {% if product.promotion %}
+              ✔
+              {% else %}
+              ✘
+              {% endif %}
+          </td>
+          <td>
+              {% if product.promotion %}
+              {{ product.promo_price}} zł
+              {% else %}
+              –
+              {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 {% endblock %}

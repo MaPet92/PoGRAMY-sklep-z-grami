@@ -1,6 +1,23 @@
-table {
-  border-collapse: collapse;
+.content-wrapper {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.header-container h1 {
+  margin: 0;
+}
+
+.table table {
   width: 100%;
+  border-collapse: collapse;
   background-color: #fee922;
 }
 
@@ -28,7 +45,7 @@ th, td {
   text-align: center;
 }
 
-button {
+.edit_delete_btn {
     width: 25px;
     height: 25px;
     font-size: 20px;
@@ -44,7 +61,26 @@ button {
     padding: 0;
 }
 
-button:hover {
+.edit_delete_btn:hover {
   background-color: #b2a317;
   color: #282828;
+}
+
+.add_product_button {
+    padding: 12px 24px;
+    width: auto;
+    font-size: 100%;
+    border-radius: 10px;
+    border: none;
+    background-color: #fee922;
+    color: #282828;
+    cursor: pointer;
+    margin: 0;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+.add_product_button:hover {
+    background-color: #b2a317;
+    color: #1c1c1c;
 }
