@@ -17,7 +17,7 @@
 }
 
 .game_page img {
-    max-width: 35%;
+    width: 35%;
     height: auto;
     align-self: center;
     border-radius: 10px;
@@ -31,6 +31,12 @@
     margin-left: 50px;
     padding: 10px;
     box-sizing: border-box;
+}
+
+.button_container {
+    display: flex;
+    gap: 50px;
+    align-items: center;
 }
 
 .add_to_basket {
@@ -48,6 +54,25 @@
 }
 
 .add_to_basket:hover {
+    background-color: #b2a317;
+    color: #1c1c1c;
+}
+
+.edit_btn {
+    padding: 12px 24px;
+    font-size: 25px;
+    border-radius: 15px;
+    border: none;
+    background-color: #fee922;
+    color: #282828;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-top: 20px;
+    align-self: flex-start;
+}
+
+.edit_btn:hover {
     background-color: #b2a317;
     color: #1c1c1c;
 }

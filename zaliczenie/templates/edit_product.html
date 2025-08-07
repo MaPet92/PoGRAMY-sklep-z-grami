@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Panel administracyjny – PoGRAMY{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/add_product.css' %}">{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="add_product_form">
+    <h2>Edytuj {{ product.name }}:</h2>
+    <br>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        {{ form.name.errors }}
+        {{ form.name.label_tag }}<br>
+        {{ form.name }}<br>
+
+        {{ form.image.errors }}
+        {{ form.image.label_tag }}<br>
+        <div class="image_preview2"><img id="image_preview" src="{% if product.image %}{{ product.image.url }}{% else %}#{% endif %}" alt="Podgląd obrazu"/></div>
+        {{ form.image }}<br>
+
+        {% for field in form %}
+            {% if field.name != 'name' and field.name != 'image' %}
+                {{ field.errors }}
+                {{ field.label_tag }}<br>
+                {{ field }}<br>
+        {% endif %}
+
+        {% endfor %}
+
+        <br><br>
+        <p><input type="submit" class="add_product_button" value="Zapisz zmiany"></p>
+    </form>
+</div>
+
+<script src="{% static 'js/image_preview.js' %}"></script>
+
+{% endblock %}

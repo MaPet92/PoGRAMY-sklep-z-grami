@@ -40,6 +40,9 @@
                     <ul class="drop_menu-list">
                         <li><a href="{% url 'account' %}">Profil</a></li>
                         <li><a href="{% url 'account' %}">Zamówienia</a></li>
+                        {% if user.is_superuser %}
+                            <li><a href="{% url 'products_list' %}">Panel</a></li>
+                        {% endif %}
                         <li><a href="{% url 'logout_page' %}">Wyloguj</a></li>
                     </ul>
                 </li>

@@ -1,0 +1,50 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: #fee922;
+}
+
+th {
+  background-color: #fee922;
+  border: 1px solid #282828;
+  color: #282828;
+}
+
+td {
+  background-color: #282828;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  text-align: center;
+  vertical-align: middle;
+}
+
+tr:hover td {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+th, td {
+  padding: 8px;
+  text-align: center;
+}
+
+button {
+    width: 25px;
+    height: 25px;
+    font-size: 20px;
+    line-height: 25px;
+    text-align: center;
+    background-color: #fee922;
+    color: #282828;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0 auto;
+    padding: 0;
+}
+
+button:hover {
+  background-color: #b2a317;
+  color: #282828;
+}

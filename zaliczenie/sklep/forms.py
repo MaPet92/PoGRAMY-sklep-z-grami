@@ -87,6 +87,7 @@ class AddProductForm(forms.ModelForm):
             'promo_price': 'Cena promocyjna',
         }
         widgets = {
+            'image': forms.FileInput(),
             'genres': forms.CheckboxSelectMultiple(),
         }
 

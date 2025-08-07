@@ -25,11 +25,23 @@
                 <a href="{% url 'games_by_genre' genre_slug=genre.slug %}">{{ genre.name }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p><br><br>
+        {% if game.promotion == True %}
+        <p class="price-container">
+            <span class="promo_price" style="font-size: 75px">{{ game.promo_price|localize }} zł</span>
+            <span class="regular_price_text">CENA REGULARNA:<br><span class="regular_price">{{ game.price|localize }} zł</span> <span class="discount">(-{{ game.discount }}%)</span></span>
+        </p>
+        {% else %}
         <p><span style="font-size: 75px">{{ game.price|localize }} zł</span></p>
-        <p><button class="add_to_basket" type="submit">Dodaj do koszyka</button></p>
+        {% endif %}
+        <div class="button_container">
+            <p><button class="add_to_basket" type="submit">Dodaj do koszyka</button></p>
+            {% if user.is_authenticated %}
+            <p><a href="{% url 'edit_product' product_id=game.id %}"><button class="edit_btn" type="button">Edytuj</button></a></p>
+            {% endif %}
+        </div>
     </div>
 </div>
-
+<br><br><br>
 <div class="five_games">
     <h2>Inne gry na platformę {{ game.platform.name }}:</h2>
     <ul>
@@ -41,7 +53,16 @@
                     <img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200">
                 {% endif %}
                 <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
+                {% if game.promotion == True %}
+                    <span class="promotion" style="font-size: 20px">PROMOCJA</span>
+                {% elif not game.is_published == True %}
+                    <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
+                {% endif %}
+                {% if game.promotion == True %}
+                <div><span style="font-size: 25px">{{ game.promo_price|localize }} zł</span></div>
+                {% else %}
+                <div><span style="font-size: 25px">{{ game.price|localize }} zł</span></div>
+                {% endif %}
                 <hr>
                 <div><button class="add-to-cart-btn five_games_basket" data-product-id="{{ game.id }}" data-quantity="1" type="button">Dodaj do koszyka</button></div>
             </li>

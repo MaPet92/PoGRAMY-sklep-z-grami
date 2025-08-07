@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
+from django.views.decorators.http import require_POST
 from sklep.models import Product, Platform, Genre, Producer
 from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm, AddProductForm
 
@@ -32,6 +33,8 @@ def logout_page(request):
 
 def game_page(request, slug):
     game = get_object_or_404(Product, slug=slug)
+    if game.promotion:
+        game.discount = round(100 - ((game.promo_price / game.price) * 100), 0)
     platform = get_object_or_404(Platform, id=game.platform_id)
     gameset = Product.objects.filter(platform_id=game.platform_id)
     return render(request, 'game.html', {'game': game, 'platform': platform, 'gameset': gameset})
@@ -183,3 +186,48 @@ def add_product(request, *args, **kwargs):
         form = AddProductForm()
 
     return render(request, 'add_product.html', {'form': form})
+
+def products_list(request):
+    if not request.user.is_superuser:
+        messages.error(request, "Nie masz uprawnień.")
+        return redirect('home')
+
+    products = Product.objects.all().order_by('name')
+    platform = Platform.objects.all()
+    producer = Producer.objects.all()
+    return render(request, 'products_list.html', {'products': products, 'platform': platform, 'producer': producer})
+
+def edit_product(request, product_id, *args, **kwargs):
+
+    if not request.user.is_superuser:
+        messages.error(request, "Nie masz uprawnień.")
+        return redirect('home')
+
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.method == 'POST':
+        form = AddProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Zapisano poprawnie")
+            return redirect('edit_product', product_id=product_id)
+
+    else:
+        form = AddProductForm(instance=product)
+
+    return render(request, 'edit_product.html', {'form': form, 'product': product})
+
+@require_POST
+def delete_product(request, product_id, *args, **kwargs):
+    if not request.user.is_superuser:
+        messages.error(request, "Nie masz uprawnień.")
+        return redirect('home')
+
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, "Produkt usunięty pomyślnie.")
+        return redirect('products_list')
+
+    return redirect('products_list')
