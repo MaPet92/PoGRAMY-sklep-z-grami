@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from sklep.views import home_page, search, game_page, games, login, register, games_by_platform, incoming_games, account, logout_page, remind_password, games_by_producer, games_by_genre, add_product, products_list, edit_product, delete_product, cart, add_to_cart, remove_from_cart
+from sklep.views import home_page, search, game_page, games, login, register, games_by_platform, incoming_games, account, logout_page, remind_password, games_by_producer, games_by_genre, add_product, products_list, edit_product, delete_product, cart, add_to_cart, remove_from_cart, place_order, order_history, order_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -42,6 +42,9 @@ urlpatterns = [
     path('cart/', cart, name='cart'),
     path('cart/add/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/remove/<int:product_id>/', remove_from_cart, name='remove_from_cart'),
+    path('order/', place_order, name='place_order'),
+    path('orders/history/', order_history, name='order_history'),
+    path('order/<int:order_id>/', order_view, name='order_view')
 ]
 
 if settings.DEBUG:

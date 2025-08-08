@@ -39,7 +39,7 @@
                 <li class="drop_menu"><a class="menu_button" class="drop_menu_head">{{ user.username }}</a>
                     <ul class="drop_menu-list">
                         <li><a href="{% url 'account' %}">Profil</a></li>
-                        <li><a href="{% url 'account' %}">Zamówienia</a></li>
+                        <li><a href="{% url 'order_history' %}">Zamówienia</a></li>
                         {% if user.is_superuser %}
                             <li><a href="{% url 'products_list' %}">Panel</a></li>
                         {% endif %}

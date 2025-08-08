@@ -1,0 +1,152 @@
+.order-form > form > p > label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.order-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    background: transparent;
+    font-family: sans-serif;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card-box {
+    width: 100%;
+    max-width: 500px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    padding: 30px;
+    box-sizing: border-box;
+    color: #282828;
+}
+
+.order-form h2,
+.order-summary h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #282828;
+}
+
+form p {
+    margin-bottom: 15px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 1em;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.btn-yellow {
+    padding: 12px 24px;
+    width: 100%;
+    background-color: #fee922;
+    color: #282828;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.btn-yellow:hover {
+    background-color: #b2a317;
+    color: #1c1c1c;
+}
+
+/* Produkty */
+.order-product-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-product-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-product-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    font-size: 0.95em;
+}
+
+.product-details strong {
+    font-size: 1.2em;
+    color: #000;
+}
+
+.order-total {
+    text-align: right;
+    font-size: 1.3em;
+    margin-top: 20px;
+}
+
+.empty-cart-text {
+    text-align: center;
+    font-size: 1.1em;
+    margin-top: 20px;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .order-wrapper {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .card-box {
+        width: 100%;
+        max-width: none;
+    }
+
+    .order-product-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .order-product-item img {
+        width: 80%;
+        height: auto;
+    }
+
+    .order-total {
+        text-align: center;
+    }
+}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Moje zamówienia – PoGRAMY{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/history.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="order-history">
+    <h2>Historia zamówień</h2>
+
+    {% if orders %}
+      <ul class="order-list">
+        {% for order in orders %}
+          <li class="order-entry">
+            <strong><a href="{% url 'order_view' order.pk %}">Zamówienie #{{ order.pk }}</a></strong><br>
+            Data: {{ order.date|date:"d.m.Y H:i" }}<br>
+            Suma: {{ order.total_price }} zł<br>
+            Status: {{ order.get_status_display }}<br>
+            Metoda płatności: {{ order.get_payment_method_display }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Nie masz jeszcze żadnych zamówień.</p>
+    {% endif %}
+  </div>
+{% endblock %}

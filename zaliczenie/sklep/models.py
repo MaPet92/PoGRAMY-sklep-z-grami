@@ -80,9 +80,6 @@ class Cart(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
     objects = CartManager()
 
-    class Meta:
-        unique_together = ('customer', 'status')
-
     def add_product(self, product, quantity=1):
         cart_item, created = CartItem.objects.get_or_create(cart=self, product=product, defaults={'quantity': quantity})
         if not created:
@@ -140,12 +137,28 @@ class Order(models.Model):
         (STATUS_CANCELLED, 'Anulowane'),
     ]
 
+    PAYMENT_CREDIT_CARD = 'credit_card'
+    PAYMENT_PAYPAL = 'paypal'
+    PAYMENT_BANK_TRANSFER = 'bank_transfer'
+    PAYMENT_CASH_ON_DELIVERY = 'cash_on_delivery'
+
+    PAYMENT_METHODS = [
+        (PAYMENT_CREDIT_CARD, 'karta kredytowa'),
+        (PAYMENT_PAYPAL, 'PayPal'),
+        (PAYMENT_BANK_TRANSFER, 'przelew bankowy'),
+        (PAYMENT_CASH_ON_DELIVERY, 'płatność przy odbiorze'),
+    ]
+
     customer = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    total_price = models.DecimalField(max_digits=6, decimal_places=2, validators=[MinValueValidator(0)], default=0)
-    date = models.DateTimeField(auto_now_add=True)
+    first_name = models.CharField(null=True, max_length=100)
+    last_name = models.CharField(null=True, max_length=100)
+    phone = models.CharField(null=True, max_length=15)
+    email = models.EmailField(null=True, blank=True)
+    address = models.CharField(null=True, max_length=255)
+    payment_method = models.CharField(max_length=32, choices=PAYMENT_METHODS)
+    total_price = models.DecimalField(null=True, max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], default=0)
+    date = models.DateTimeField(null=True, auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
-    address = models.CharField(blank=True, null=True, max_length=128)
-    payment_method = models.CharField(max_length=128)
 
     def get_items(self):
         return self.orderitem_set.all()

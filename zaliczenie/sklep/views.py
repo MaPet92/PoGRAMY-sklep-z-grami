@@ -1,4 +1,6 @@
 import random
+
+from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, F, DecimalField
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
@@ -6,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
 from django.views.decorators.http import require_POST
 from sklep.models import Product, Platform, Genre, Producer, Order, OrderItem, Cart
-from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm, AddProductForm
+from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm, AddProductForm, OrderForm
 
 # Create your views here.
 
@@ -267,22 +269,85 @@ def cart(request):
     items = cart.get_items() if cart else []
     return render(request, 'cart.html', {'cart': cart, 'items': items})
 
-def create_order_from_cart(cart, address, payment_method):
-    order = Order.objects.create(customer=cart.customer, address=address, payment_method=payment_method, status=Order.STATUS_NEW)
+def get_user_cart(user):
+    try:
+        return Cart.objects.get(customer=user, status=Cart.STATUS_NEW)
+    except Cart.DoesNotExist:
+        return None
+
+def create_order_from_cart(cart, form_data):
+    address = f"{form_data['street']} {form_data['house_number']}"
+    if form_data.get('apartment_number'):
+        address += f"/{form_data['apartment_number']}"
+    address += f", {form_data['city']}, {form_data['zip_code']}"
+
+    order = Order.objects.create(
+        customer=cart.customer,
+        first_name=form_data['first_name'],
+        last_name=form_data['last_name'],
+        phone=form_data['phone'],
+        email=form_data['email'],
+        address=address,
+        payment_method=form_data['payment_method'],
+        status=Order.STATUS_NEW
+    )
 
     for cart_item in cart.get_items():
-        price = cart_item.product.promo_price if cart_item.product.promotion else cart_item.product.price
-
-        OrderItem.objects.create(order=order, product=cart_item.product, quantity=cart_item.quantity, price=price)
-
         product = cart_item.product
+        if product.stock < cart_item.quantity:
+            raise ValueError(f'Nie ma wystarczającej liczby kopii {product.name} w magazynie.')
+
+        price = product.promo_price if product.promotion else product.price
+
+        OrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=cart_item.quantity,
+            price=price
+        )
+
         product.stock = max(product.stock - cart_item.quantity, 0)
         product.save(update_fields=['stock'])
 
     order.update_total_price()
-
     cart.cartitem_set.all().delete()
     cart.status = cart.STATUS_COMPLETED
     cart.save()
 
     return order
+
+def place_order(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    cart = get_user_cart(request.user)
+    if not cart or not cart.get_items():
+        messages.error(request, "Twój koszyk jest pusty.")
+        return redirect('cart')
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            try:
+                order = create_order_from_cart(cart, form.cleaned_data)
+                return render(request, 'order.html', {'order': order})
+            except ValueError as e:
+                messages.error(request, str(e))
+                return redirect('cart')
+    else:
+        form = OrderForm()
+
+    return render(request, 'order_form.html', {'form': form, 'cart': cart, 'items': cart.get_items()})
+
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(customer=request.user).order_by('-date')
+    return render(request, 'history.html', {'orders': orders})
+
+def order_view(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if order.customer != request.user:
+        return HttpResponseForbidden("Nie masz dostępu do tego zamówienia.")
+
+    return render(request, 'order_view.html', {'order': order})

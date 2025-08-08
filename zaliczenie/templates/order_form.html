@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Zamówienie – PoGRAMY{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/order.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="order-wrapper">
+
+  <div class="order-form card-box">
+    <h2>Złóż zamówienie</h2>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn-yellow">Potwierdź zamówienie</button>
+    </form>
+  </div>
+
+  <div class="order-summary card-box">
+    <h2>Twoje produkty</h2>
+
+    {% if items %}
+      <ul class="order-product-list">
+        {% for item in items %}
+          <li class="order-product-item">
+            {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+            {% else %}
+            <img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200">
+            {% endif %}
+            <div class="product-details">
+              <strong>{{ item.product.name }}</strong>
+              <span>Liczba: {{ item.quantity }}</span>
+              <span>Cena za szt.:
+                {% if item.product.promotion %}
+                  {{ item.product.promo_price }} zł
+                {% else %}
+                  {{ item.product.price }} zł
+                {% endif %}
+              </span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      <p class="order-total"><strong>Suma: {{ cart.total_price }} zł</strong></p>
+    {% else %}
+      <p class="empty-cart-text">Twój koszyk jest pusty.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

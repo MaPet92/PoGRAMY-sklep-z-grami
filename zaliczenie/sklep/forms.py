@@ -120,3 +120,25 @@ class AddProductForm(forms.ModelForm):
             self.add_error('promo_price', "Cena promocyjna powinna być większa od zera.")
 
         return cleaned_data
+
+class OrderForm(forms.Form):
+    first_name = forms.CharField(max_length=100, label="Imię:", widget=forms.TextInput(attrs={'placeholder': 'Imię'}))
+    last_name = forms.CharField(max_length=100, label="Nazwisko:", widget=forms.TextInput(attrs={'placeholder': 'Nazwisko'}))
+    street = forms.CharField(max_length=100, label="Ulica:", widget=forms.TextInput(attrs={'placeholder': 'Ulica'}))
+    house_number = forms.CharField(max_length=10, label="Nr domu:", widget=forms.TextInput(attrs={'placeholder': 'Nr domu'}))
+    apartment_number = forms.CharField(max_length=10, label="Nr domu:", widget=forms.TextInput(attrs={'placeholder': 'Nr mieszkania'}))
+    zip_code = forms.CharField(max_length=10, label="Kod pocztowy:", widget=forms.TextInput(attrs={'placeholder': 'Kod pocztowy'}))
+    city = forms.CharField(max_length=100, label="Miasto:", widget=forms.TextInput(attrs={'placeholder': 'Miasto'}))
+    phone = forms.CharField(max_length=10, label="Numer telefonu:", widget=forms.TextInput(attrs={'placeholder': 'Numer telefonu'}))
+    email = forms.EmailField(max_length=100, label="E-mail:", widget=forms.EmailInput(attrs={'placeholder': 'E-mail'}))
+    payment_method = forms.ChoiceField(
+        choices=[
+            ('card', 'Karta płatnicza'),
+            ('paypal', 'PayPal'),
+            ('bank_transfer', 'Przelew bankowy'),
+            ('cash', 'Płatność przy odbiorze'),
+        ],
+        widget=forms.RadioSelect,
+        label='Metoda płatności',
+        required=True
+    )

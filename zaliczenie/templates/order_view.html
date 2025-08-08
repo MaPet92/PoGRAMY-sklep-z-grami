@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Szczegóły zamówienia – PoGRAMY{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/order_view.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="order-wrapper">
+
+  <div class="order-detail card-box">
+    <h2>Szczegóły zamówienia #{{ order.id }}</h2>
+
+    <div class="order-info">
+      <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+      <p><strong>Data:</strong> {{ order.date|date:"d.m.Y" }}</p>
+      <p><strong>Imię i nazwisko:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+      <p><strong>E-mail:</strong> {{ order.email }}</p>
+      <p><strong>Telefon:</strong> {{ order.phone }}</p>
+      <p><strong>Adres:</strong> {{ order.address }}</p>
+      <p><strong>Metoda płatności:</strong> {{ order.get_payment_method_display }}</p>
+    </div>
+
+    <h3>Produkty</h3>
+    <ul class="order-product-list">
+      {% for item in order.get_items %}
+      <li class="order-product-item">
+        {% if item.product.image %}
+        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+        {% else %}
+        <img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200">
+        {% endif %}
+        <div class="product-details">
+          <strong>{{ item.product.name }}</strong>
+          <span>Liczba: <strong>{{ item.quantity }}</strong></span>
+          <span>Cena za szt.: <strong>{{ item.price }} zł</strong></span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <p class="order-total"><strong>Suma: <strong>{{ order.total_price }} zł</strong></p>
+  </div>
+
+</div>
+{% endblock %}
