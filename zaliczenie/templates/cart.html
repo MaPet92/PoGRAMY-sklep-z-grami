@@ -1,20 +1,59 @@
 {% extends "base.html" %}
 {% load static %}
+{% load custom_filters %}
 
-{% block title %}Dane konta – PoGRAMY{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/dane_konta.css' %}">{% endblock %}
+{% block title %}Koszyk – PoGRAMY{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cart.css' %}">
+{% endblock %}
 
 {% block content %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="cart_site">
 
-</body>
-</html>
+  <h2>Twój koszyk</h2>
+
+  <div class="cart_content">
+    <div class="cart_products">
+      {% for item in items %}
+      <div class="cart_item">
+          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+
+          <div class="product-info">
+              <div class="top-info">
+                  <div class="left-top">
+                      <div class="title-platform">
+                          <div class="product-name">{{ item.product.name }}</div>
+                          <div class="platform">({{ item.product.platform.name }})</div>
+                      </div>
+                      <div class="producer">{{ item.product.producer.name }}</div>
+                  </div>
+
+                  <form action="{% url 'remove_from_cart' product_id=item.product.id %}" method="post" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="remove_button">Usuń</button>
+                  </form>
+              </div>
+
+              <div class="product-price-qty">
+                  {{ item.quantity }} x {{ item.product.price }} zł = <strong>{{ item.quantity|multiply:item.product.price }} zł</strong>
+              </div>
+          </div>
+      </div>
+      {% empty %}
+      <p>Nic tutaj nie ma...</p>
+      <div class="sad-container">
+        <p class="sad">☹</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="cart_total_price">
+      <p>Łączna cena:<br><strong>{{ cart.total_price }} zł</strong></p>
+      <button class="order_products">Zamów produkty</button>
+    </div>
+  </div>
+
+</div>
 
 {% endblock %}

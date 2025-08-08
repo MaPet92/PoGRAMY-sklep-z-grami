@@ -1,1 +1,1 @@
-web: gunicorn zaliczenie.wsgi
+web: gunicorn zaliczenie.wsgi --log-file -

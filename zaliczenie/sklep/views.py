@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
 from django.views.decorators.http import require_POST
-from sklep.models import Product, Platform, Genre, Producer
+from sklep.models import Product, Platform, Genre, Producer, Order, OrderItem, Cart
 from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm, AddProductForm
 
 # Create your views here.
@@ -231,3 +231,58 @@ def delete_product(request, product_id, *args, **kwargs):
         return redirect('products_list')
 
     return redirect('products_list')
+
+def create_cart(request):
+    cart = Cart.objects.create(customer=request.user)
+    return cart
+
+def add_to_cart(request, product_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    product = get_object_or_404(Product, id=product_id)
+    cart, created = Cart.objects.new_or_get_active_cart(request.user)
+    cart.add_product(product, quantity=1)
+
+    messages.success(request, f'Produkt <strong>{product.name}</strong> dodany do koszyka.')
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@require_POST
+def remove_from_cart(request, product_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    product = get_object_or_404(Product, id=product_id)
+    cart, _ = Cart.objects.new_or_get_active_cart(request.user)
+    cart.remove_product(product, quantity=1)
+
+    messages.success(request, f'Produkt <strong>{product.name}</strong> usunięty z koszyka.')
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+def cart(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    cart, _ = Cart.objects.new_or_get_active_cart(request.user)
+    items = cart.get_items() if cart else []
+    return render(request, 'cart.html', {'cart': cart, 'items': items})
+
+def create_order_from_cart(cart, address, payment_method):
+    order = Order.objects.create(customer=cart.customer, address=address, payment_method=payment_method, status=Order.STATUS_NEW)
+
+    for cart_item in cart.get_items():
+        price = cart_item.product.promo_price if cart_item.product.promotion else cart_item.product.price
+
+        OrderItem.objects.create(order=order, product=cart_item.product, quantity=cart_item.quantity, price=price)
+
+        product = cart_item.product
+        product.stock = max(product.stock - cart_item.quantity, 0)
+        product.save(update_fields=['stock'])
+
+    order.update_total_price()
+
+    cart.cartitem_set.all().delete()
+    cart.status = cart.STATUS_COMPLETED
+    cart.save()
+
+    return order

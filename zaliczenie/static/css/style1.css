@@ -37,6 +37,7 @@ a {
 }
 
 .header {
+    height: 100px;
     font-family: sans-serif;
     font-size: 1.0em;
     padding: 0 20px;
@@ -475,6 +476,30 @@ a {
 .discount {
     color: red;
     font-weight: normal;
+}
+
+.popup-message {
+    position: fixed;
+    font-family: sans-serif;
+    top: 120px;
+    right: 20px;
+    background-color: #fee922;
+    color: #000;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(100%);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    display: block;
+}
+
+.popup-message.show {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 .footer {

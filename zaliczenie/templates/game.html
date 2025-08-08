@@ -34,9 +34,9 @@
         <p><span style="font-size: 75px">{{ game.price|localize }} zł</span></p>
         {% endif %}
         <div class="button_container">
-            <p><button class="add_to_basket" type="submit">Dodaj do koszyka</button></p>
+            <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add_to_basket" type="submit">Dodaj do koszyka</button></form>
             {% if user.is_authenticated %}
-            <p><a href="{% url 'edit_product' product_id=game.id %}"><button class="edit_btn" type="button">Edytuj</button></a></p>
+            <a href="{% url 'edit_product' product_id=game.id %}"><button class="edit_btn" type="button">Edytuj</button></a>
             {% endif %}
         </div>
     </div>
@@ -64,7 +64,11 @@
                 <div><span style="font-size: 25px">{{ game.price|localize }} zł</span></div>
                 {% endif %}
                 <hr>
-                <div><button class="add-to-cart-btn five_games_basket" data-product-id="{{ game.id }}" data-quantity="1" type="button">Dodaj do koszyka</button></div>
+                <div><form action="{% url 'add_to_cart' product_id=game.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button></form>
+                </form></div>
+                <div>
             </li>
         {% empty %}
             <li>Brak gier</li>

@@ -34,7 +34,7 @@
                     </ul>
                 </li>
                 <li><a class="menu_button" href="">Kontakt</a></li>
-                <li><a href="#" class="cart" id="cart_icon"><img src="{% static 'images/cart_icon.png' %}" alt="cart"><span class="cart_count" id="cart-count">0</span></a></li>
+                <li><a href="{% url 'cart' %}" class="cart" id="cart_icon"><img src="{% static 'images/cart_icon.png' %}" alt="cart"><span class="cart_count" id="cart-count">{{ cart_quantity|default:"0" }}</span></a></li>
                 {% if user.is_authenticated %}
                 <li class="drop_menu"><a class="menu_button" class="drop_menu_head">{{ user.username }}</a>
                     <ul class="drop_menu-list">
@@ -53,6 +53,10 @@
         </nav>
     </header>
 
+
+
+    <div id="popup-message" class="popup-message"></div>
+
     <main class="main-container">
         {% block content %}
         {% endblock %}
@@ -64,6 +68,30 @@
     </footer>
 
     <script src="{% static 'js/sorted.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const popup = document.getElementById("popup-message");
+
+            {% if messages %}
+                {% for message in messages %}
+                    popup.innerHTML = "{{ message|safe|escapejs }}";
+                    popup.classList.add("popup-message", "{{ message.tags }}");
+                {% endfor %}
+
+                setTimeout(() => {
+                    popup.classList.add("show");
+                }, 50);
+
+                setTimeout(() => {
+                    popup.classList.remove("show");
+
+                setTimeout(() => {
+                    popup.className = "popup-message";
+                }, 300);
+            }, 3000);
+            {% endif %}
+        });
+    </script>
 
 </body>
 </html>
