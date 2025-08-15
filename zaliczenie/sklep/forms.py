@@ -126,17 +126,17 @@ class OrderForm(forms.Form):
     last_name = forms.CharField(max_length=100, label="Nazwisko:", widget=forms.TextInput(attrs={'placeholder': 'Nazwisko'}))
     street = forms.CharField(max_length=100, label="Ulica:", widget=forms.TextInput(attrs={'placeholder': 'Ulica'}))
     house_number = forms.CharField(max_length=10, label="Nr domu:", widget=forms.TextInput(attrs={'placeholder': 'Nr domu'}))
-    apartment_number = forms.CharField(max_length=10, label="Nr domu:", widget=forms.TextInput(attrs={'placeholder': 'Nr mieszkania'}))
-    zip_code = forms.CharField(max_length=10, label="Kod pocztowy:", widget=forms.TextInput(attrs={'placeholder': 'Kod pocztowy'}))
+    apartment_number = forms.CharField(required=False, max_length=10, label="Nr mieszkania:", widget=forms.TextInput(attrs={'placeholder': 'Nr mieszkania'}))
+    zip_code = forms.RegexField(regex=r'^\d{2}-\d{3}$', max_length=6,label="Kod pocztowy:", error_messages={'invalid': "Wpisz kod pocztowy w formacie '00-000'."}, widget=forms.TextInput(attrs={'placeholder': 'XX-XXX'}))
     city = forms.CharField(max_length=100, label="Miasto:", widget=forms.TextInput(attrs={'placeholder': 'Miasto'}))
-    phone = forms.CharField(max_length=10, label="Numer telefonu:", widget=forms.TextInput(attrs={'placeholder': 'Numer telefonu'}))
+    phone = forms.RegexField(regex=r'^\d{9}$', max_length=9, label="Numer telefonu:", error_messages={'invalid': "Wpisz dziewięć cyfr numeru telefonu bez spacji."}, widget=forms.TextInput(attrs={'placeholder': 'Numer telefonu'}))
     email = forms.EmailField(max_length=100, label="E-mail:", widget=forms.EmailInput(attrs={'placeholder': 'E-mail'}))
     payment_method = forms.ChoiceField(
         choices=[
-            ('card', 'Karta płatnicza'),
+            ('credit_card', 'karta płatnicza'),
             ('paypal', 'PayPal'),
-            ('bank_transfer', 'Przelew bankowy'),
-            ('cash', 'Płatność przy odbiorze'),
+            ('bank_transfer', 'przelew bankowy'),
+            ('cash_on_delivery', 'płatność przy odbiorze'),
         ],
         widget=forms.RadioSelect,
         label='Metoda płatności',

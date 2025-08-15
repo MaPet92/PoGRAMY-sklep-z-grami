@@ -26,7 +26,7 @@
               <div class="top-info">
                   <div class="left-top">
                       <div class="title-platform">
-                          <div class="product-name">{{ item.product.name }}</div>
+                          <a href="{% url 'game_page' slug=item.product.slug %}" class="product-name">{{ item.product.name }}</a>
                           <div class="platform">({{ item.product.platform.name }})</div>
                       </div>
                       <div class="producer">{{ item.product.producer.name }}</div>

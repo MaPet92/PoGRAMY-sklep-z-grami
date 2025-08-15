@@ -1,14 +1,18 @@
 import random
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db import transaction
 from django.db.models import Case, When, F, DecimalField
 from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
-from django.views.decorators.http import require_POST
+from django.views.generic import ListView, View
 from sklep.models import Product, Platform, Genre, Producer, Order, OrderItem, Cart
 from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm, AddProductForm, OrderForm
+
 
 # Create your views here.
 
@@ -41,38 +45,85 @@ def game_page(request, slug):
     gameset = Product.objects.filter(platform_id=game.platform_id)
     return render(request, 'game.html', {'game': game, 'platform': platform, 'gameset': gameset})
 
-def games(request):
-    sorted_by = request.GET.get('sorted', 'name')
-    games = Product.objects.all()
-    games = sortings(games, sorted_by)
-    return render(request, 'games.html', {'games': games, 'sorted': sorted_by})
+class GamesView(ListView):
+    model = Product
+    template_name = 'games.html'
+    context_object_name =  'games'
+    filter_by = None
+    coming_soon = False
+    paginate_by = 24
 
-def games_by_platform(request, platform_slug):
-    sorted_by = request.GET.get('sorted', 'name')
-    platform = get_object_or_404(Platform, slug=platform_slug)
-    games = Product.objects.filter(platform=platform)
-    games = sortings(games, sorted_by)
-    return render(request, 'games.html', {'sorted': sorted_by, 'platform': platform, 'slug': platform_slug, 'games': games})
+    def get_sorted_by(self):
+        return self.request.GET.get('sorted', 'name')
 
-def games_by_producer(request, producer_slug):
-    sorted_by = request.GET.get('sorted', 'name')
-    producer = get_object_or_404(Producer, slug=producer_slug)
-    games = Product.objects.filter(producer=producer)
-    games = sortings(games, sorted_by)
-    return render(request, 'games.html', {'sorted': sorted_by, 'producer': producer, 'slug': producer_slug, 'games': games})
+    def get_queryset(self):
+        qs = Product.objects.all().select_related('platform', 'producer').prefetch_related('genres')
 
-def games_by_genre(request, genre_slug):
-    sorted_by = request.GET.get('sorted', 'name')
-    genre = get_object_or_404(Genre, slug=genre_slug)
-    games = Product.objects.filter(genres=genre)
-    games = sortings(games, sorted_by)
-    return render(request, 'games.html', {'sorted': sorted_by, 'genre': genre, 'slug': genre_slug, 'games': games})
+        if self.filter_by == 'platform':
+            platform_slug = self.kwargs.get('platform_slug')
+            self.platform = get_object_or_404(Platform, slug=platform_slug)
+            qs = qs.filter(platform=self.platform)
 
-def incoming_games(request):
-    sorted_by = request.GET.get('sorted', 'name')
-    games = Product.objects.filter(is_published=False)
-    games = sortings(games, sorted_by)
-    return render(request, 'games.html', {'games': games, 'sorted': sorted_by, 'coming_soon': True})
+        elif self.filter_by == 'producer':
+            producer_slug = self.kwargs.get('producer_slug')
+            self.producer = get_object_or_404(Producer, slug=producer_slug)
+            qs = qs.filter(producer=self.producer)
+
+        elif self.filter_by == 'genre':
+            genre_slug = self.kwargs.get('genre_slug')
+            self.genre = get_object_or_404(Genre, slug=genre_slug)
+            qs = qs.filter(genres=self.genre).distinct()
+
+        if self.coming_soon:
+            qs = qs.filter(is_published=False)
+
+        return sortings(qs, self.get_sorted_by())
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['sorted'] = self.get_sorted_by()
+
+        if hasattr(self, 'platform'):
+            ctx.update({'platform': self.platform, 'slug': self.platform.slug, 'filter_by': 'platform'})
+        if hasattr(self, 'producer'):
+            ctx.update({'producer': self.producer, 'slug': self.producer.slug, 'filter_by': 'producer'})
+        if hasattr(self, 'genre'):
+            ctx.update({'genre': self.genre, 'slug': self.genre.slug, 'filter_by': 'genre'})
+
+        if self.coming_soon:
+            ctx['coming_soon'] = True
+
+        return ctx
+
+def sortings(queryset, sorted_by):
+    if sorted_by == 'name_up':
+        return queryset.order_by('name')
+    if sorted_by == 'name_down':
+        return queryset.order_by('-name')
+    elif sorted_by == 'price_up':
+        annotated_qs = queryset.annotate(
+            price_to_sort=Case(
+                When(promotion=True, then=F('promo_price')),
+                default=F('price'),
+                output_field=DecimalField()
+            )
+        ).order_by('price_to_sort')
+        return annotated_qs
+    elif sorted_by == 'price_down':
+        annotated_qs = queryset.annotate(
+            price_to_sort=Case(
+                When(promotion=True, then=F('promo_price')),
+                default=F('price'),
+                output_field=DecimalField()
+            )
+        ).order_by('-price_to_sort')
+        return annotated_qs
+    elif sorted_by == 'year_of_premiere_up':
+        return queryset.order_by('year_of_premiere')
+    elif sorted_by == 'year_of_premiere_down':
+        return queryset.order_by('-year_of_premiere')
+    else:
+        return queryset.order_by('name')
 
 def login(request, *args, **kwargs):
     if request.method == 'POST':
@@ -142,212 +193,190 @@ def account(request):
 
     return render(request, 'account.html', {'form': form})
 
-def sortings(queryset, sorted_by):
-    if sorted_by == 'name_up':
-        return queryset.order_by('name')
-    if sorted_by == 'name_down':
-        return queryset.order_by('-name')
-    elif sorted_by == 'price_up':
-        annotated_qs = queryset.annotate(
-            price_to_sort=Case(
-                When(promotion=True, then=F('promo_price')),
-                default=F('price'),
-                output_field=DecimalField()
-            )
-        ).order_by('price_to_sort')
-        return annotated_qs
-    elif sorted_by == 'price_down':
-        annotated_qs = queryset.annotate(
-            price_to_sort=Case(
-                When(promotion=True, then=F('promo_price')),
-                default=F('price'),
-                output_field=DecimalField()
-            )
-        ).order_by('-price_to_sort')
-        return annotated_qs
-    elif sorted_by == 'year_of_premiere_up':
-        return queryset.order_by('year_of_premiere')
-    elif sorted_by == 'year_of_premiere_down':
-        return queryset.order_by('-year_of_premiere')
-    else:
-        return queryset.order_by('name')
+class SuperUserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    login_url = 'login'
+    raise_exception = False
 
-def add_product(request, *args, **kwargs):
-    if not request.user.is_superuser:
-        messages.error(request, "Nie masz uprawnień.")
+    def test_func(self):
+        return bool(self.request.user and self.request.user.is_superuser)
+
+    def handle_no_permission(self):
+        messages.error(self.request, "Nie masz uprawnień do tej strony")
         return redirect('home')
 
-    if request.method == 'POST':
-        form = AddProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Zapisano poprawnie")
-            return redirect('add_product')
+class ProductsAdminView(SuperUserRequiredMixin, ListView):
+    action = 'list'
 
-    else:
-        form = AddProductForm()
+    def get(self, request, *args, **kwargs):
+        action = getattr(self, 'action', 'list')
+        product_id = kwargs.get('product_id')
 
-    return render(request, 'add_product.html', {'form': form})
+        if action == 'list':
+            products = Product.objects.all().order_by('name')
+            platforms = Platform.objects.all()
+            producers = Producer.objects.all()
+            return render(request, 'products_list.html', {'products': products, 'platforms': platforms, 'producers': producers})
 
-def products_list(request):
-    if not request.user.is_superuser:
-        messages.error(request, "Nie masz uprawnień.")
-        return redirect('home')
+        if action == 'add':
+            form = AddProductForm()
+            return render(request, 'add_product.html', {'form': form})
 
-    products = Product.objects.all().order_by('name')
-    platform = Platform.objects.all()
-    producer = Producer.objects.all()
-    return render(request, 'products_list.html', {'products': products, 'platform': platform, 'producer': producer})
+        if action == 'edit':
+            product = get_object_or_404(Product, id=product_id)
+            form = AddProductForm(instance=product)
+            return render(request, 'edit_product.html', {'form': form, 'product': product})
 
-def edit_product(request, product_id, *args, **kwargs):
-
-    if not request.user.is_superuser:
-        messages.error(request, "Nie masz uprawnień.")
-        return redirect('home')
-
-    product = get_object_or_404(Product, id=product_id)
-
-    if request.method == 'POST':
-        form = AddProductForm(request.POST, request.FILES, instance=product)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Zapisano poprawnie")
-            return redirect('edit_product', product_id=product_id)
-
-    else:
-        form = AddProductForm(instance=product)
-
-    return render(request, 'edit_product.html', {'form': form, 'product': product})
-
-@require_POST
-def delete_product(request, product_id, *args, **kwargs):
-    if not request.user.is_superuser:
-        messages.error(request, "Nie masz uprawnień.")
-        return redirect('home')
-
-    product = get_object_or_404(Product, id=product_id)
-
-    if request.method == 'POST':
-        product.delete()
-        messages.success(request, "Produkt usunięty pomyślnie.")
         return redirect('products_list')
 
-    return redirect('products_list')
+    def post(self, request, *args, **kwargs):
+        action = getattr(self, 'action', 'list')
+        product_id = kwargs.get('product_id')
 
-def create_cart(request):
-    cart = Cart.objects.create(customer=request.user)
-    return cart
+        if action == 'add':
+            form = AddProductForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                message.succes(request, "Zapisano poprawnie")
+                return redirect('add_product')
+            return render(request, 'add_product.html', {'form': form})
 
-def add_to_cart(request, product_id):
-    if not request.user.is_authenticated:
-        return redirect('login')
+        if action == 'edit':
+            product = get_object_or_404(Product, id=product_id)
+            form = AddProductForm(request.POST, request.FILES, instance=product)
+            if form.is_valid():
+                form.save()
+                message.succes(request, "Zapisano poprawnie")
+                return redirect('ediit_product', product_id=product.id)
+            return render(request, 'edit_product.html', {'form': form, 'product': product})
 
-    product = get_object_or_404(Product, id=product_id)
-    cart, created = Cart.objects.new_or_get_active_cart(request.user)
-    cart.add_product(product, quantity=1)
+        if action == 'delete':
+            product = get_object_or_404(Product, id=product_id)
+            product.delete()
+            messages.success(request, "Produkt usunięty poprawnie")
+            return redirect('products_list')
 
-    messages.success(request, f'Produkt <strong>{product.name}</strong> dodany do koszyka.')
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+        return redirect('products_list')
 
-@require_POST
-def remove_from_cart(request, product_id):
-    if not request.user.is_authenticated:
-        return redirect('login')
+class CartView(LoginRequiredMixin, View):
 
-    product = get_object_or_404(Product, id=product_id)
-    cart, _ = Cart.objects.new_or_get_active_cart(request.user)
-    cart.remove_product(product, quantity=1)
+    def get_cart(self, user):
+        cart, _ = Cart.objects.new_or_get_active_cart(user)
+        return cart
 
-    messages.success(request, f'Produkt <strong>{product.name}</strong> usunięty z koszyka.')
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+    def get(self, request, *args, **kwargs):
+        cart = self.get_cart(request.user)
+        items = cart.get_items() if cart else []
+        return render(request, 'cart.html', {'cart': cart, 'items': items})
 
-def cart(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
+    def post(self, request, *args, **kwargs):
+        action = kwargs.get('action')
+        product_id = kwargs.get('product_id')
+        product = get_object_or_404(Product, id=product_id)
+        cart = self.get_cart(request.user)
 
-    cart, _ = Cart.objects.new_or_get_active_cart(request.user)
-    items = cart.get_items() if cart else []
-    return render(request, 'cart.html', {'cart': cart, 'items': items})
+        if action == 'add':
+            cart.add_product(product, quantity=1)
+            messages.success(request, f'Produkt <strong>{product.name}</strong> dodany do koszyka.')
+        elif action == 'remove':
+            cart.remove_product(product, quantity=1)
+            messages.success(request, f'Produkt <strong>{product.name}</strong> usunięty z koszyka.')
 
-def get_user_cart(user):
-    try:
-        return Cart.objects.get(customer=user, status=Cart.STATUS_NEW)
-    except Cart.DoesNotExist:
-        return None
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
-def create_order_from_cart(cart, form_data):
-    address = f"{form_data['street']} {form_data['house_number']}"
-    if form_data.get('apartment_number'):
-        address += f"/{form_data['apartment_number']}"
-    address += f", {form_data['city']}, {form_data['zip_code']}"
+class OrderView(LoginRequiredMixin, View):
+    login_url = 'login'
 
-    order = Order.objects.create(
-        customer=cart.customer,
-        first_name=form_data['first_name'],
-        last_name=form_data['last_name'],
-        phone=form_data['phone'],
-        email=form_data['email'],
-        address=address,
-        payment_method=form_data['payment_method'],
-        status=Order.STATUS_NEW
-    )
+    def get_user_cart(self, user):
+        try:
+            return Cart.objects.get(customer=user, status=Cart.STATUS_NEW)
+        except Cart.DoesNotExist:
+            return None
 
-    for cart_item in cart.get_items():
-        product = cart_item.product
-        if product.stock < cart_item.quantity:
-            raise ValueError(f'Nie ma wystarczającej liczby kopii {product.name} w magazynie.')
+    @transaction.atomic
+    def create_order_from_cart(self, cart, form_data):
+        address = f'{form_data["street"]}, {form_data["house_number"]}'
+        if form_data["apartment_number"]:
+            address += f' {form_data["apartment_number"]}'
+        address += f', {form_data["city"]}, {form_data["zip_code"]}'
 
-        price = product.promo_price if product.promotion else product.price
-
-        OrderItem.objects.create(
-            order=order,
-            product=product,
-            quantity=cart_item.quantity,
-            price=price
+        order = Order.objects.create(
+            customer=cart.customer,
+            first_name=form_data['first_name'],
+            last_name=form_data['last_name'],
+            phone=form_data['phone'],
+            email=form_data['email'],
+            address=address,
+            payment_method=form_data['payment_method'],
+            status=Order.STATUS_NEW
         )
 
-        product.stock = max(product.stock - cart_item.quantity, 0)
-        product.save(update_fields=['stock'])
+        for cart_item in cart.get_items():
+            product = cart_item.product
+            if product.stock < cart_item.quantity:
+                raise ValueError(f'Nie ma wystarczającej liczby kopii {product.name} w magazynie.')
 
-    order.update_total_price()
-    cart.cartitem_set.all().delete()
-    cart.status = cart.STATUS_COMPLETED
-    cart.save()
+            price = product.promo_price if product.promotion else product.price
 
-    return order
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=cart_item.quantity,
+                price=price
+            )
 
-def place_order(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
+            product.stock = max(product.stock - cart_item.quantity, 0)
+            product.save(update_fields=['stock'])
 
-    cart = get_user_cart(request.user)
-    if not cart or not cart.get_items():
-        messages.error(request, "Twój koszyk jest pusty.")
-        return redirect('cart')
+        order.update_total_price()
+        cart.cartitem_set.all().delete()
+        cart.status = Cart.STATUS_CLOSED
+        cart.save()
 
-    if request.method == 'POST':
+        return order
+
+    def get(self, request, *args, **kwargs):
+        action = kwargs.get('action')
+        order_id = kwargs.get('order_id')
+
+        if action == 'place':
+            cart = self.get_user_cart(request.user)
+            if not cart or not cart.get_items():
+                messages.error(request, "Twój koszyk jest pusty")
+                return redirect('cart')
+
+            form = OrderForm()
+            return render(request, 'order_form.html', {'cart': cart, 'form': form, 'items': cart.get_items()})
+
+        elif action == 'view' and order_id:
+            order = get_object_or_404(Order, id=order_id)
+            if order.customer != request.user:
+                return HttpResponseForbidden("Nie masz dostępu do tej strony.")
+            return render(request, 'order_view.html', {'order': order})
+
+        elif action == 'history':
+            orders = Order.objects.filter(customer=request.user).order_by('-date')
+            return render(request, 'history.html', {'orders': orders})
+
+        return redirect('home')
+
+    def post(self, request, *args, **kwargs):
+        action = kwargs.get('action')
+
+        if action != 'place':
+            return redirect('home')
+
+        cart = self.get_user_cart(request.user)
+        if not cart or not cart.get_items():
+            messages.error(request, "Twój koszyk jest pusty")
+            return redirect('cart')
+
         form = OrderForm(request.POST)
         if form.is_valid():
             try:
-                order = create_order_from_cart(cart, form.cleaned_data)
+                order = self.create_order_from_cart(cart, form.cleaned_data)
                 return render(request, 'order.html', {'order': order})
             except ValueError as e:
                 messages.error(request, str(e))
-                return redirect('cart')
-    else:
-        form = OrderForm()
+                return render(request, 'order_form', {'form': form, 'cart': cart, 'items': cart.get_items()})
 
-    return render(request, 'order_form.html', {'form': form, 'cart': cart, 'items': cart.get_items()})
-
-@login_required
-def order_history(request):
-    orders = Order.objects.filter(customer=request.user).order_by('-date')
-    return render(request, 'history.html', {'orders': orders})
-
-def order_view(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-
-    if order.customer != request.user:
-        return HttpResponseForbidden("Nie masz dostępu do tego zamówienia.")
-
-    return render(request, 'order_view.html', {'order': order})
+        return render(request, 'order_form.html', {'cart': cart, 'form': form, 'items': cart.get_items()})

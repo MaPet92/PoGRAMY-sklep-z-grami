@@ -49,8 +49,18 @@
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
                 <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                <div>
-                    <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button></form>
+                <div style="display: inline;">
+                    {% if game.stock > 0 %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="five_games_basket_disabled" type="submit" disabled>Brak w magazynie</button>
+                        </form>
+                    {% endif %}
                 </div>
             </li>
         {% empty %}
@@ -84,8 +94,18 @@
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
                 <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                <div>
-                    <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button></form>
+                <div style="display: inline;">
+                    {% if game.stock > 0 %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="five_games_basket_disabled" type="submit" disabled>Brak w magazynie</button>
+                        </form>
+                    {% endif %}
                 </div>
             </li>
         {% empty %}
@@ -119,8 +139,18 @@
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
                 <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                <div>
-                    <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button></form>
+                <div style="display: inline;">
+                    {% if game.stock > 0 %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="five_games_basket_disabled" type="submit" disabled>Brak w magazynie</button>
+                        </form>
+                    {% endif %}
                 </div>
             </li>
         {% empty %}
@@ -154,8 +184,18 @@
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
                 <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                <div>
-                    <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button></form>
+                <div style="display: inline;">
+                    {% if game.stock > 0 %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="five_games_basket_disabled" type="submit" disabled>Brak w magazynie</button>
+                        </form>
+                    {% endif %}
                 </div>
             </li>
         {% empty %}
@@ -189,8 +229,18 @@
                     <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
                 {% endif %}
                 <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                <div>
-                    <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button></form>
+                <div style="display: inline;">
+                    {% if game.stock > 0 %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="five_games_basket_disabled" type="submit" disabled>Brak w magazynie</button>
+                        </form>
+                    {% endif %}
                 </div>
             </li>
         {% empty %}

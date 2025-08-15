@@ -54,6 +54,8 @@ select {
     font-size: 1em;
     margin-bottom: 10px;
     box-sizing: border-box;
+    background-color: #282828;
+    color: #fee922;
 }
 
 .btn-yellow {
@@ -94,8 +96,6 @@ select {
     width: 100px;
     height: 100px;
     object-fit: contain;
-    border: 1px solid #ccc;
-    border-radius: 10px;
 }
 
 .product-details {

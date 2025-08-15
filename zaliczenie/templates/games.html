@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Wszystkie gry – PoGRAMY{% endblock %}
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/style2.css' %}">{% endblock %}
@@ -35,12 +36,26 @@
                     <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
                 {% endif %}
                 {% if game.promotion == True %}
-                    <div><span style="font-size: 25px">{{ game.promo_price }} zł</span></div>
+                    <div><span style="font-size: 25px">{{ game.promo_price|localize }} zł</span></div>
                 {% else %}
-                    <div><span style="font-size: 25px">{{ game.price }} zł</span></div>
+                    <div><span style="font-size: 25px">{{ game.price|localize }} zł</span></div>
                 {% endif %}
                     <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
-                    <div><form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button></form></div>
+
+                <div style="display: inline;">
+                    {% if game.stock > 0 %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="five_games_basket_disabled" type="submit" disabled>Brak w magazynie</button>
+                        </form>
+                    {% endif %}
+                </div>
+
             </li>
         {% empty %}
             <li>Brak gier</li>

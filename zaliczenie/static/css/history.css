@@ -1,6 +1,7 @@
 h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    margin-top: 5px;
     color: #333;
 }
 
@@ -38,14 +39,22 @@ h2 {
     transition: transform 0.2s ease;
 }
 
+.order-entry span {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
 .order-entry:hover {
     transform: translateY(-2px);
+    background-color: #e0e0e0;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .order-entry a {
-    color: #3498db;
-    text-decoration: none;
+    color: #000000;
+    background-color: #fee922;
+    padding: 10px 15px;
+    border-radius: 5px;
     font-size: 1.1em;
 }
 
@@ -61,6 +70,8 @@ h2 {
 .order-entry br {
     margin-bottom: 4px;
 }
+
+
 
 p {
     text-align: center;

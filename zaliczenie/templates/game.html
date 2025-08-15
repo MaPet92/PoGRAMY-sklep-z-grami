@@ -17,7 +17,7 @@
     <div class="game_info">
         <p><span style="font-size: 50px">{{ game.name }}</span></p>
         <p><strong>Opis produktu:</strong><br>{{ game.description }}</p>
-        <p><strong>Producent:</strong> <a href="{% url 'games_by_producer' producer_slug=game.producer.slug %}">{{ game.producer.name }}</p>
+        <p><strong>Producent:</strong> <a href="{% url 'games_by_producer' producer_slug=game.producer.slug %}">{{ game.producer.name }}</a></p>
         <p><strong>Platforma:</strong> <a href="{% url 'games_by_platform' platform_slug=game.platform.slug %}">{{ game.platform.name }}</a></p>
         <p><strong>Rok premiery:</strong> {{ game.year_of_premiere|stringformat:"d" }}</p>
         <p><strong>Gatunek:</strong>
@@ -28,20 +28,40 @@
         {% if game.promotion == True %}
         <p class="price-container">
             <span class="promo_price" style="font-size: 75px">{{ game.promo_price|localize }} zł</span>
-            <span class="regular_price_text">CENA REGULARNA:<br><span class="regular_price">{{ game.price|localize }} zł</span> <span class="discount">(-{{ game.discount }}%)</span></span>
+            <span class="regular_price_text">
+                CENA REGULARNA:<br>
+                <span class="regular_price">{{ game.price|localize }} zł</span>
+                <span class="discount">(-{{ game.discount }}%)</span>
+            </span>
         </p>
         {% else %}
         <p><span style="font-size: 75px">{{ game.price|localize }} zł</span></p>
         {% endif %}
+
         <div class="button_container">
-            <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add_to_basket" type="submit">Dodaj do koszyka</button></form>
+            {% if game.stock > 0 %}
+                <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                    {% csrf_token %}
+                    <button class="add_to_basket" type="submit">Dodaj do koszyka</button>
+                </form>
+            {% else %}
+                <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                    {% csrf_token %}
+                    <button class="add_to_basket_disabled" type="submit" disabled>Brak w magazynie</button>
+                </form>
+            {% endif %}
+
             {% if user.is_authenticated %}
-            <a href="{% url 'edit_product' product_id=game.id %}"><button class="edit_btn" type="button">Edytuj</button></a>
+                <a href="{% url 'edit_product' product_id=game.id %}">
+                    <button class="edit_btn" type="button">Edytuj</button>
+                </a>
             {% endif %}
         </div>
     </div>
 </div>
+
 <br><br><br>
+
 <div class="five_games">
     <h2>Inne gry na platformę {{ game.platform.name }}:</h2>
     <ul>
@@ -52,30 +72,44 @@
                 {% else %}
                     <img src="{% static 'images/placeholder.png' %}" alt="Brak okładki" width="200">
                 {% endif %}
+
                 <div><strong><a href="{% url 'game_page' slug=game.slug %}">{{ game.name }}</a></strong></div>
+
                 {% if game.promotion == True %}
                     <span class="promotion" style="font-size: 20px">PROMOCJA</span>
                 {% elif not game.is_published == True %}
                     <span class="coming" style="font-size: 20px">ZAPOWIEDŹ</span>
                 {% endif %}
+
                 {% if game.promotion == True %}
-                <div><span style="font-size: 25px">{{ game.promo_price|localize }} zł</span></div>
+                    <div><span style="font-size: 25px">{{ game.promo_price|localize }} zł</span></div>
                 {% else %}
-                <div><span style="font-size: 25px">{{ game.price|localize }} zł</span></div>
+                    <div><span style="font-size: 25px">{{ game.price|localize }} zł</span></div>
                 {% endif %}
-                <hr>
-                <div><form action="{% url 'add_to_cart' product_id=game.id %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">{% csrf_token %}<button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button></form>
-                </form></div>
-                <div>
+
+                <div style="display: inline;">
+                    {% if game.stock > 0 %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="add-to-cart-btn five_games_basket" type="submit">Dodaj do koszyka</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'add_to_cart' product_id=game.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="five_games_basket_disabled" type="submit" disabled>Brak w magazynie</button>
+                        </form>
+                    {% endif %}
+                </div>
             </li>
         {% empty %}
             <li>Brak gier</li>
         {% endfor %}
     </ul>
+
     <br>
-    <div style="text-align: right; margin-bottom: -25px;"><a href="{% url 'games_by_platform' platform_slug=game.platform.slug %}">Zobacz więcej >>></a></div>
+    <div style="text-align: right; margin-bottom: -25px;">
+        <a href="{% url 'games_by_platform' platform_slug=game.platform.slug %}">Zobacz więcej >>></a>
+    </div>
 </div>
 
 {% endblock %}

@@ -16,11 +16,11 @@
       <ul class="order-list">
         {% for order in orders %}
           <li class="order-entry">
-            <strong><a href="{% url 'order_view' order.pk %}">Zamówienie #{{ order.pk }}</a></strong><br>
-            Data: {{ order.date|date:"d.m.Y H:i" }}<br>
-            Suma: {{ order.total_price }} zł<br>
-            Status: {{ order.get_status_display }}<br>
-            Metoda płatności: {{ order.get_payment_method_display }}
+            <strong><a href="{% url 'order_view' order.pk %}">Zamówienie #{{ order.pk }}</a></strong><br><br>
+            <span style="font-weight: bold;">Data:</span> {{ order.date|date:"d.m.Y H:i" }}<br>
+            <span style="font-weight: bold;">Suma:</span> {{ order.total_price }} zł<br>
+            <span style="font-weight: bold;">Status:</span> {{ order.get_status_display }}<br>
+            <span style="font-weight: bold;">Metoda płatności:</span> {{ order.get_payment_method_display }}
           </li>
         {% endfor %}
       </ul>
