@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from sklep.views import OrderView, CartView, ProductsAdminView, GamesView, home_page, search, game_page, login, register, account, logout_page, remind_password
+from sklep.views import OrdersAdminView, OrderView, CartView, ProductsAdminView, GamesView, home_page, search, game_page, login, register, account, logout_page, remind_password
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -25,6 +25,7 @@ urlpatterns = [
     path('search/', search, name='search'),
     path('account/', account, name='account'),
     path('logout/', logout_page, name='logout_page'),
+    path('login/', login, name='login'),
     path('remind_password/', remind_password, name='remind_password'),
     path('admin/', admin.site.urls, name='admin'),
     path('game/<slug:slug>/', game_page, name='game_page'),
@@ -33,7 +34,6 @@ urlpatterns = [
     path('games/platform/<slug:platform_slug>/', GamesView.as_view(filter_by='platform'), name='games_by_platform'),
     path('games/producer/<slug:producer_slug>/', GamesView.as_view(filter_by='producer'), name='games_by_producer'),
     path('games/genre/<slug:genre_slug>/', GamesView.as_view(filter_by='genre'), name='games_by_genre'),
-    path('login/', login, name='login'),
     path('register/', register, name='register'),
     path('panel/add_product/', ProductsAdminView.as_view(action='add'), name='add_product'),
     path('panel/edit_product/<int:product_id>/', ProductsAdminView.as_view(action='edit'), name='edit_product'),
@@ -44,7 +44,11 @@ urlpatterns = [
     path('cart/remove/<int:product_id>/', CartView.as_view(), {'action': 'remove'}, name='remove_from_cart'),
     path('order/', OrderView.as_view(), {'action': 'place'}, name='place_order'),
     path('order/history/', OrderView.as_view(), {'action': 'history'}, name='order_history'),
-    path('order/<int:order_id>/', OrderView.as_view(), {'action': 'view'}, name='order_view')
+    path('order/<int:order_id>/', OrderView.as_view(), {'action': 'view'}, name='order_view'),
+    path('panel/orders_list/', OrdersAdminView.as_view(action='list'), name='orders_list'),
+    path('panel/add_order/', OrdersAdminView.as_view(action='add'), name='add_order'),
+    path('panel/edit_order/<int:order_id>/', OrdersAdminView.as_view(action='edit'), name='edit_order'),
+    path('panel/delete_order/<int:order_id>/', OrdersAdminView.as_view(action='delete'), name='delete_order'),
 ]
 
 if settings.DEBUG:

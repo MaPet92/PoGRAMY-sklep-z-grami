@@ -33,6 +33,23 @@ def home_page(request):
     random_switch_games = random.sample(switch_games, min(len(switch_games), 5))
     return render(request, 'home.html', {'random_promo_games': random_promo_games, 'random_coming_games': random_coming_games, 'random_pc_games': random_pc_games, 'random_playstation_games': random_playstation_games, 'random_xbox_games': random_xbox_games, 'random_switch_games': random_switch_games})
 
+def login(request, *args, **kwargs):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user:
+                auth_login(request, user)
+                messages.success(request, "Zalogowano poprawnie")
+                return redirect('home')
+            else:
+                messages.error(request, "Nieprawidłowy login lub hasło")
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
+
 def logout_page(request):
     logout(request)
     return redirect('home')
@@ -125,23 +142,6 @@ def sortings(queryset, sorted_by):
     else:
         return queryset.order_by('name')
 
-def login(request, *args, **kwargs):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user:
-                auth_login(request, user)
-                messages.success(request, "Zalogowano poprawnie")
-                return redirect('home')
-            else:
-                messages.error(request, "Nieprawidłowy login lub hasło")
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
-
 def remind_password(request, *args, **kwargs):
     if request.method == 'POST':
         form = RemindPasswordForm(request.POST)
@@ -204,7 +204,7 @@ class SuperUserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         messages.error(self.request, "Nie masz uprawnień do tej strony")
         return redirect('home')
 
-class ProductsAdminView(SuperUserRequiredMixin, ListView):
+class ProductsAdminView(SuperUserRequiredMixin, View):
     action = 'list'
 
     def get(self, request, *args, **kwargs):
@@ -236,17 +236,17 @@ class ProductsAdminView(SuperUserRequiredMixin, ListView):
             form = AddProductForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
-                message.succes(request, "Zapisano poprawnie")
+                messages.success(request, "Zapisano poprawnie")
                 return redirect('add_product')
-            return render(request, 'add_product.html', {'form': form})
+            return render(request, 'products_list.html', {'form': form})
 
         if action == 'edit':
             product = get_object_or_404(Product, id=product_id)
             form = AddProductForm(request.POST, request.FILES, instance=product)
             if form.is_valid():
                 form.save()
-                message.succes(request, "Zapisano poprawnie")
-                return redirect('ediit_product', product_id=product.id)
+                messages.success(request, "Zapisano poprawnie")
+                return redirect('edit_product', product_id=product.id)
             return render(request, 'edit_product.html', {'form': form, 'product': product})
 
         if action == 'delete':
@@ -380,3 +380,54 @@ class OrderView(LoginRequiredMixin, View):
                 return render(request, 'order_form', {'form': form, 'cart': cart, 'items': cart.get_items()})
 
         return render(request, 'order_form.html', {'cart': cart, 'form': form, 'items': cart.get_items()})
+
+class OrdersAdminView(SuperUserRequiredMixin, View):
+    action = 'list'
+
+    def get(self, request, *args, **kwargs):
+        action = getattr(self, 'action', 'list')
+        order_id = kwargs.get('order_id')
+
+        if action == 'list':
+            orders = Order.objects.all().order_by('-date')
+            return render(request, 'orders_list.html', {'orders': orders})
+
+        if action == 'add':
+            form = AddOrderForm()
+            return render(request, 'add_order.html', {'form': form})
+
+        if action == 'edit':
+            order = get_object_or_404(Order, id=order_id)
+            form = AddOrderForm(instance=order)
+            return render(request, 'edit_order.html', {'form': form, 'order': order})
+
+        return redirect('orders_list')
+
+    def post(self, request, *args, **kwargs):
+        action = getattr(self, 'action', 'list')
+        order_id = kwargs.get('order_id')
+
+        if action == 'add':
+            form = OrderForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Zapisano poprawnie")
+                return redirect('orders_list')
+            return render(request, 'add_order.html', {'form': form})
+
+        if action == 'edit':
+            order = get_object_or_404(Order, id=order_id)
+            form = OrderForm(request.POST, request.FILES, instance=order)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Zapisano poprawnie")
+                return redirect('edit_order', order_id=order.id)
+            return render(request, 'edit_order.html', {'form': form, 'order': order})
+
+        if action == 'delete':
+            order = get_object_or_404(Order, id=order_id)
+            order.delete()
+            messages.success(request, "Zamówienie usunięte poprawnie")
+            return redirect('orders_list')
+
+        return redirect('orders_list')

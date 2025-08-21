@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Panel administracyjny – PoGRAMY{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/product_list.css' %}">{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="content-wrapper">
+  <div class="header-container">
+    <h1>Lista zamówień:</h1>
+  </div>
+    <form action="{% url 'add_order' %}">
+      <button class="add_product_button">Dodaj nowe zamówienie</button>
+    </form>
+
+    <br>
+
+  <div class="table">
+    <table>
+      <thead>
+        <tr>
+          <th>Edytuj</th>
+          <th>Usuń</th>
+          <th>Id</th>
+          <th>Data</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for order in orders %}
+        <tr>
+          <td><form action="{% url 'edit_order' order_id=order.id %}"><button class="edit_delete_btn" type="submit">✎</button></form></td>
+          <td><form action="{% url 'delete_order' order_id=order.id %}" method="post" style="display:inline;">{% csrf_token %}<button class="edit_delete_btn" type="submit" onclick="return confirm('Na pewno chcesz usunąć zamówienie {{ order.id }} z bazy danych?')">✘</button></form></td>
+          <td>{{ order.id }}</td>
+          <td>{{ order.date }}</td>
+          <td><strong>{{ order.status }}</strong></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
