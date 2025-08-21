@@ -1,6 +1,4 @@
 import random
-
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import transaction
 from django.db.models import Case, When, F, DecimalField
@@ -9,6 +7,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
+from django.template.defaulttags import csrf_token
 from django.views.generic import ListView, View
 from sklep.models import Product, Platform, Genre, Producer, Order, OrderItem, Cart
 from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm, AddProductForm, OrderForm
@@ -392,42 +391,32 @@ class OrdersAdminView(SuperUserRequiredMixin, View):
             orders = Order.objects.all().order_by('-date')
             return render(request, 'orders_list.html', {'orders': orders})
 
-        if action == 'add':
-            form = AddOrderForm()
-            return render(request, 'add_order.html', {'form': form})
-
-        if action == 'edit':
-            order = get_object_or_404(Order, id=order_id)
-            form = AddOrderForm(instance=order)
-            return render(request, 'edit_order.html', {'form': form, 'order': order})
-
         return redirect('orders_list')
 
     def post(self, request, *args, **kwargs):
         action = getattr(self, 'action', 'list')
         order_id = kwargs.get('order_id')
 
-        if action == 'add':
-            form = OrderForm(request.POST)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Zapisano poprawnie")
-                return redirect('orders_list')
-            return render(request, 'add_order.html', {'form': form})
-
-        if action == 'edit':
-            order = get_object_or_404(Order, id=order_id)
-            form = OrderForm(request.POST, request.FILES, instance=order)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Zapisano poprawnie")
-                return redirect('edit_order', order_id=order.id)
-            return render(request, 'edit_order.html', {'form': form, 'order': order})
-
         if action == 'delete':
             order = get_object_or_404(Order, id=order_id)
-            order.delete()
+            with transaction.atomic():
+                for item in order.orderitem_set.all():
+                    item.product.stock += item.quantity
+                    item.product.save(update_fields=['stock'])
+                order.delete()
             messages.success(request, "Zamówienie usunięte poprawnie")
             return redirect('orders_list')
+
+        if action == 'list':
+            order_id = request.POST.get('order_id')
+            new_status = request.POST.get('status')
+            if order_id and new_status:
+                order = get_object_or_404(Order, id=order_id)
+                if new_status in dict(Order.STATUS_CHOICES).keys():
+                    order.status = new_status
+                    order.save(update_fields=['status'])
+                    messages.success(request, f"Status zamówienia nr {order.id} zmieniony na {order.get_status_display()}")
+                else:
+                    messages.error(request, "Nie udało się zmienić statusu. Wybierz poprawny status z listy")
 
         return redirect('orders_list')

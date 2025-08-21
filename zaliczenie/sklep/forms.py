@@ -142,3 +142,16 @@ class OrderForm(forms.Form):
         label='Metoda płatności',
         required=True
     )
+
+class OrderStatusForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status']
+        labels = {
+            'status': 'Status',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['status'].choices = sorted(self.fields['status'].choices, key=lambda x: x[1])

@@ -4,7 +4,6 @@ pytestmark = pytest.mark.django_db
 from django.urls import reverse
 from sklep.models import Product, Genre, Platform, Producer
 from django.contrib.auth.models import User
-from django.contrib.messages import get_messages
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 ###

@@ -1,3 +1,6 @@
+import pytest
+pytestmark = pytest.mark.django_db
+
 def test_register_success(client):
     data = {
         'username': 'test',

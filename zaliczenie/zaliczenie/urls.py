@@ -46,8 +46,6 @@ urlpatterns = [
     path('order/history/', OrderView.as_view(), {'action': 'history'}, name='order_history'),
     path('order/<int:order_id>/', OrderView.as_view(), {'action': 'view'}, name='order_view'),
     path('panel/orders_list/', OrdersAdminView.as_view(action='list'), name='orders_list'),
-    path('panel/add_order/', OrdersAdminView.as_view(action='add'), name='add_order'),
-    path('panel/edit_order/<int:order_id>/', OrdersAdminView.as_view(action='edit'), name='edit_order'),
     path('panel/delete_order/<int:order_id>/', OrdersAdminView.as_view(action='delete'), name='delete_order'),
 ]
 
