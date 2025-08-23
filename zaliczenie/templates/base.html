@@ -41,7 +41,10 @@
                         <li><a href="{% url 'account' %}">Profil</a></li>
                         <li><a href="{% url 'order_history' %}">Zamówienia</a></li>
                         {% if user.is_superuser %}
-                            <li><a href="{% url 'products_list' %}">Panel</a></li>
+                            <li><hr class="admin-separator"></li>
+                            <li><a href="{% url 'products_list' %}">Panel<br>gier</a></li>
+                            <li><a href="{% url 'orders_list' %}">Panel<br>zamówień</a></li>
+                            <li><hr class="admin-separator"></li>
                         {% endif %}
                         <li><a href="{% url 'logout_page' %}">Wyloguj</a></li>
                     </ul>

@@ -1,4 +1,5 @@
 import random
+from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import transaction
 from django.db.models import Case, When, F, DecimalField
@@ -7,7 +8,6 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout, login as auth_login
-from django.template.defaulttags import csrf_token
 from django.views.generic import ListView, View
 from sklep.models import Product, Platform, Genre, Producer, Order, OrderItem, Cart
 from sklep.forms import LoginForm, RegisterForm, RemindPasswordForm, EditAccountForm, AddProductForm, OrderForm
@@ -58,7 +58,7 @@ def game_page(request, slug):
     if game.promotion:
         game.discount = round(100 - ((game.promo_price / game.price) * 100), 0)
     platform = get_object_or_404(Platform, id=game.platform_id)
-    gameset = Product.objects.filter(platform_id=game.platform_id)
+    gameset = Product.objects.filter(platform_id=game.platform_id).exclude(id=game.id)
     return render(request, 'game.html', {'game': game, 'platform': platform, 'gameset': gameset})
 
 class GamesView(ListView):
@@ -328,7 +328,7 @@ class OrderView(LoginRequiredMixin, View):
 
         order.update_total_price()
         cart.cartitem_set.all().delete()
-        cart.status = Cart.STATUS_CLOSED
+        cart.status = Cart.STATUS_COMPLETED
         cart.save()
 
         return order
@@ -373,10 +373,10 @@ class OrderView(LoginRequiredMixin, View):
         if form.is_valid():
             try:
                 order = self.create_order_from_cart(cart, form.cleaned_data)
-                return render(request, 'order.html', {'order': order})
+                return redirect('order_view', order_id=order.id)
             except ValueError as e:
                 messages.error(request, str(e))
-                return render(request, 'order_form', {'form': form, 'cart': cart, 'items': cart.get_items()})
+                return render(request, 'order_form.html', {'form': form, 'cart': cart, 'items': cart.get_items()})
 
         return render(request, 'order_form.html', {'cart': cart, 'form': form, 'items': cart.get_items()})
 

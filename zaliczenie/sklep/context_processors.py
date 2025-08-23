@@ -13,5 +13,5 @@ def cart_counter(request):
     }
 
 def cart(request):
-    cart = get_cart_from_session_or_db(request)  # Twój kod pobierający koszyk
+    cart = get_cart_from_session_or_db(request)
     return {'cart': cart}

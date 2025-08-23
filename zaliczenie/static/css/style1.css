@@ -189,7 +189,12 @@ a {
     transition: 0.4s;
 }
 
-/* Slider */
+.admin-separator {
+    border: none;
+    border-top: 2px solid #b30000;
+    margin: 6px 0;
+}
+
 .promo_slider {
     cursor: pointer;
     width: 80%;
@@ -278,7 +283,6 @@ a {
     100%      { transform: translateX(0); }
 }
 
-/* Reszta stylów */
 .five_games {
     max-width: 60%;
     width: 100%;
